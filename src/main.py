@@ -15,6 +15,7 @@ from pydantic import ValidationError
 from src.api_client import CryptoRankAPIError, CryptoRankClient
 from src.config import Settings
 from src.models import ICOItem
+from src.scraper import CryptoRankPageScraper
 
 
 logger = logging.getLogger(__name__)
@@ -22,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 StatusArg = Literal["past", "upcoming", "all"]
 OutputFormat = Literal["json", "csv", "both"]
+Source = Literal["auto", "api", "scrape"]
 
 
 def configure_logging(debug: bool = False) -> None:
@@ -56,6 +58,12 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("json", "csv", "both"),
         default=None,
         help="Output format. Overrides FORMAT.",
+    )
+    parser.add_argument(
+        "--source",
+        choices=("auto", "api", "scrape"),
+        default="auto",
+        help="Data source: REST API, public page-data scraper, or API with scraper fallback.",
     )
     parser.add_argument(
         "--debug",
@@ -125,11 +133,17 @@ def run(argv: list[str] | None = None) -> int:
 
     output_dir = args.output_dir or settings.output_dir
     output_format = args.format or settings.output_format
-    client = CryptoRankClient(settings)
+    api_client = CryptoRankClient(settings)
+    scraper = CryptoRankPageScraper(settings)
 
     try:
         for status in statuses_to_fetch(args.status):
-            items = client.fetch_icos(status)
+            items = fetch_items(
+                status=status,
+                source=args.source,
+                api_client=api_client,
+                scraper=scraper,
+            )
             save_items(output_dir, status, output_format, items)
     except CryptoRankAPIError as exc:
         logger.error("%s", exc)
@@ -141,6 +155,29 @@ def run(argv: list[str] | None = None) -> int:
     return 0
 
 
+def fetch_items(
+    status: Literal["past", "upcoming"],
+    source: Source,
+    api_client: CryptoRankClient,
+    scraper: CryptoRankPageScraper,
+) -> list[ICOItem]:
+    """Fetch items from selected source."""
+    if source == "scrape":
+        return scraper.fetch_icos(status)
+    if source == "api":
+        return api_client.fetch_icos(status)
+
+    try:
+        return api_client.fetch_icos(status)
+    except CryptoRankAPIError as exc:
+        logger.warning(
+            "REST API source failed for %s ICOs: %s. Falling back to scraper.",
+            status,
+            exc,
+        )
+        return scraper.fetch_icos(status)
+
+
 def main() -> None:
     """Entrypoint for `python -m src.main`."""
     sys.exit(run())
@@ -148,4 +185,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -57,6 +57,13 @@ Fetch only past ICOs and save both JSON and CSV:
 python -m src.main --status past --format both --output-dir data
 ```
 
+Force public page-data scraping when REST `/currencies/public-sales` is not
+available on your CryptoRank tariff:
+
+```bash
+python -m src.main --status all --format both --source scrape
+```
+
 Fetch upcoming ICOs with debug logs:
 
 ```bash

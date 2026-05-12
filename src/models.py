@@ -108,11 +108,11 @@ class ICOItem(BaseModel):
             "symbol": _first_present(values, ("symbol", "ticker")),
             "start_date": _first_present(
                 values,
-                ("start_date", "startDate", "start", "dateStart"),
+                ("start_date", "startDate", "start", "dateStart", "when"),
             ),
             "end_date": _first_present(
                 values,
-                ("end_date", "endDate", "end", "dateEnd"),
+                ("end_date", "endDate", "end", "dateEnd", "till"),
             ),
             "status": _first_present(values, ("status", "state")),
             "raised_amount": _first_present(
@@ -133,7 +133,7 @@ class ICOItem(BaseModel):
             or social.get("telegram"),
             "token_price": _first_present(
                 values,
-                ("token_price", "tokenPrice", "price", "priceUSD"),
+                ("token_price", "tokenPrice", "salePrice", "price", "priceUSD"),
             ),
             "tokenomics": _first_present(
                 values,
@@ -233,4 +233,3 @@ class ICOResponse(BaseModel):
         except (TypeError, ValueError):
             logger.warning("Unable to cast total to int: %r", value)
             return None
-

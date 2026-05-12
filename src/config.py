@@ -21,6 +21,7 @@ class Settings(BaseSettings):
 
     cryptorank_api_key: str = Field(..., env="CRYPTORANK_API_KEY")
     cryptorank_base_url: str = Field(..., env="CRYPTORANK_BASE_URL")
+    cryptorank_frontend_api_url: str = Field(..., env="CRYPTORANK_FRONTEND_API_URL")
     cryptorank_auth_mode: Literal["x-api-key", "bearer"] = Field(
         "x-api-key",
         env="CRYPTORANK_AUTH_MODE",
@@ -35,7 +36,7 @@ class Settings(BaseSettings):
     )
     timeout_seconds: float = Field(30.0, env="TIMEOUT_SECONDS")
 
-    @validator("cryptorank_base_url")
+    @validator("cryptorank_base_url", "cryptorank_frontend_api_url")
     def normalize_base_url(cls, value: str) -> str:
         """Remove trailing slash to make endpoint joins predictable."""
         normalized = value.strip().rstrip("/")
@@ -62,4 +63,3 @@ class Settings(BaseSettings):
 
         env_file = ".env"
         env_file_encoding = "utf-8"
-

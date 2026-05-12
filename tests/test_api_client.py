@@ -16,6 +16,7 @@ def make_settings() -> Settings:
     return Settings(
         cryptorank_api_key="test-key",
         cryptorank_base_url="https://api.example.test/v1",
+        cryptorank_frontend_api_url="https://frontend.example.test/v0",
         request_delay=0,
         page_limit=2,
         _env_file=None,
@@ -98,4 +99,3 @@ def test_request_json_raises_after_repeated_429() -> None:
 
     with pytest.raises(RetryableAPIError):
         client._request_json("/ico/past", {"limit": 2, "offset": 0})
-
