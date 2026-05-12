@@ -170,6 +170,39 @@ th {
   text-transform: uppercase;
 }
 
+.sortHeader {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+  padding: 0;
+  text-align: left;
+  text-transform: inherit;
+}
+
+.sortHeader::after {
+  content: "";
+  color: var(--accent);
+  font-size: 11px;
+}
+
+.sortHeader.active.asc::after {
+  content: "▲";
+}
+
+.sortHeader.active.desc::after {
+  content: "▼";
+}
+
+.sortHeader:hover {
+  color: var(--text);
+}
+
 tbody tr:hover {
   background: #171e2b;
 }

@@ -2,6 +2,8 @@ const state = {
   rows: [],
   categories: [],
   language: localStorage.getItem("icoDashboardLanguage") || "en",
+  sortColumn: "rating",
+  sortDirection: "desc",
 };
 
 const translations = {
@@ -186,9 +188,10 @@ function render() {
     );
   });
 
-  rows = sortRows(rows, els.sortSelect.value);
+  rows = sortRows(rows);
   els.visibleCount.textContent = `${formatNumber(rows.length)} ${t("rows")}`;
   els.tableBody.innerHTML = rows.slice(0, 1000).map(renderRow).join("");
+  updateSortHeaders();
 
   if (rows.length > 1000) {
     els.loadState.textContent = t("showingFirst");
@@ -197,25 +200,31 @@ function render() {
   }
 }
 
-function sortRows(rows, sortKey) {
+function sortRows(rows) {
   return [...rows].sort((a, b) => {
-    if (sortKey === "raised_desc") {
-      return Number(b.raised_amount || 0) - Number(a.raised_amount || 0);
-    }
-    if (sortKey === "roi_desc") {
-      return Number(b.roi || 0) - Number(a.roi || 0);
-    }
-    if (sortKey === "ath_roi_desc") {
-      return Number(b.ath_roi || 0) - Number(a.ath_roi || 0);
-    }
-    if (sortKey === "date_desc") {
-      return dateValue(b.start_date) - dateValue(a.start_date);
-    }
-    if (sortKey === "name_asc") {
-      return String(a.name || "").localeCompare(String(b.name || ""));
-    }
-    return b.rating - a.rating;
+    const result = compareRows(a, b, state.sortColumn);
+    return state.sortDirection === "asc" ? result : -result;
   });
+}
+
+function compareRows(a, b, column) {
+  if (["rating", "raised_amount", "token_price", "current_price", "roi", "ath_roi"].includes(column)) {
+    return Number(a[column] || 0) - Number(b[column] || 0);
+  }
+
+  if (["investors", "launchpads"].includes(column)) {
+    return countItems(a[column]) - countItems(b[column]);
+  }
+
+  if (["start_date", "end_date"].includes(column)) {
+    return dateValue(a[column]) - dateValue(b[column]);
+  }
+
+  return String(a[column] || "").localeCompare(String(b[column] || ""));
+}
+
+function countItems(value) {
+  return Array.isArray(value) ? value.length : 0;
 }
 
 function renderRow(row) {
@@ -339,8 +348,69 @@ function applyTranslations() {
   els.statusFilter,
   els.categoryFilter,
   els.ratingFilter,
-  els.sortSelect,
 ].forEach((element) => element.addEventListener("input", render));
+
+els.sortSelect.addEventListener("input", () => {
+  const [column, direction] = sortSelectToState(els.sortSelect.value);
+  state.sortColumn = column;
+  state.sortDirection = direction;
+  render();
+});
+
+document.querySelectorAll(".sortHeader").forEach((button) => {
+  button.addEventListener("click", () => {
+    const column = button.dataset.sortColumn;
+    if (state.sortColumn === column) {
+      state.sortDirection = state.sortDirection === "asc" ? "desc" : "asc";
+    } else {
+      state.sortColumn = column;
+      state.sortDirection = defaultDirection(column);
+    }
+    syncSortSelect();
+    render();
+  });
+});
+
+function sortSelectToState(value) {
+  const mapping = {
+    rating_desc: ["rating", "desc"],
+    roi_desc: ["roi", "desc"],
+    ath_roi_desc: ["ath_roi", "desc"],
+    raised_desc: ["raised_amount", "desc"],
+    date_desc: ["start_date", "desc"],
+    name_asc: ["name", "asc"],
+  };
+  return mapping[value] || ["rating", "desc"];
+}
+
+function defaultDirection(column) {
+  if (["name", "status", "category"].includes(column)) {
+    return "asc";
+  }
+  return "desc";
+}
+
+function syncSortSelect() {
+  const key = `${state.sortColumn}_${state.sortDirection}`;
+  const reverseMapping = {
+    rating_desc: "rating_desc",
+    roi_desc: "roi_desc",
+    ath_roi_desc: "ath_roi_desc",
+    raised_amount_desc: "raised_desc",
+    start_date_desc: "date_desc",
+    name_asc: "name_asc",
+  };
+  els.sortSelect.value = reverseMapping[key] || "rating_desc";
+}
+
+function updateSortHeaders() {
+  document.querySelectorAll(".sortHeader").forEach((button) => {
+    const isActive = button.dataset.sortColumn === state.sortColumn;
+    button.classList.toggle("active", isActive);
+    button.classList.toggle("asc", isActive && state.sortDirection === "asc");
+    button.classList.toggle("desc", isActive && state.sortDirection === "desc");
+  });
+}
 
 els.languageSelect.addEventListener("change", () => {
   state.language = els.languageSelect.value;
