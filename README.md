@@ -76,6 +76,29 @@ Run tests:
 pytest
 ```
 
+## UI
+
+The project includes a small dark table dashboard that reads generated files
+from `output/`.
+
+Generate data first:
+
+```bash
+python -m src.main --status all --format both --source scrape
+```
+
+Start the static server from the project root:
+
+```bash
+python -m http.server 8787
+```
+
+Open:
+
+```text
+http://localhost:8787/frontend/
+```
+
 ## Output Example
 
 ```json

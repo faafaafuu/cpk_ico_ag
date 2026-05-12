@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CryptoRank ICO Dashboard</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">CryptoRank ICO Agent</p>
+          <h1>ICO Dashboard</h1>
+        </div>
+        <div class="summary" aria-label="Dataset summary">
+          <div>
+            <span id="totalCount">0</span>
+            <small>Total</small>
+          </div>
+          <div>
+            <span id="pastCount">0</span>
+            <small>Past</small>
+          </div>
+          <div>
+            <span id="upcomingCount">0</span>
+            <small>Upcoming</small>
+          </div>
+        </div>
+      </header>
+
+      <section class="controls" aria-label="Table filters">
+        <label>
+          <span>Search</span>
+          <input id="searchInput" type="search" placeholder="Name or symbol" />
+        </label>
+
+        <label>
+          <span>Status</span>
+          <select id="statusFilter">
+            <option value="all">All</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="past">Past</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Category</span>
+          <select id="categoryFilter">
+            <option value="all">All categories</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Min rating</span>
+          <select id="ratingFilter">
+            <option value="0">Any</option>
+            <option value="80">80+</option>
+            <option value="60">60+</option>
+            <option value="40">40+</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Sort</span>
+          <select id="sortSelect">
+            <option value="rating_desc">Rating high to low</option>
+            <option value="raised_desc">Raised high to low</option>
+            <option value="date_desc">Date newest</option>
+            <option value="name_asc">Name A-Z</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="tableShell">
+        <div class="tableMeta">
+          <strong id="visibleCount">0 rows</strong>
+          <span id="loadState">Loading data...</span>
+        </div>
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Rating</th>
+                <th>Project</th>
+                <th>Status</th>
+                <th>Category</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Raised</th>
+                <th>Token price</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
