@@ -27,9 +27,9 @@ body {
 }
 
 .app {
-  width: min(1500px, calc(100% - 32px));
+  width: min(1680px, calc(100% - 24px));
   margin: 0 auto;
-  padding: 28px 0 40px;
+  padding: clamp(14px, 2vw, 28px) 0 40px;
 }
 
 .topbar {
@@ -90,7 +90,7 @@ h1 {
 
 .controls {
   display: grid;
-  grid-template-columns: 2fr repeat(4, minmax(150px, 1fr));
+  grid-template-columns: minmax(220px, 2fr) repeat(4, minmax(130px, 1fr));
   gap: 12px;
   margin-bottom: 16px;
 }
@@ -198,7 +198,7 @@ h1 {
 
 .picksGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
   gap: 10px;
 }
 
@@ -254,10 +254,26 @@ h1 {
   padding: 4px 8px;
 }
 
-.allocation {
+.starsLine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.starsLine span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.starsLine strong {
   color: var(--accent);
   font-size: 18px;
   font-weight: 900;
+  letter-spacing: 1px;
 }
 
 .termsBlock {
@@ -367,7 +383,7 @@ select:focus {
 .tableWrap {
   overflow-x: hidden;
   overflow-y: auto;
-  max-height: calc(100vh - 260px);
+  max-height: calc(100vh - 220px);
 }
 
 table {
@@ -378,7 +394,7 @@ table {
 
 th,
 td {
-  padding: 11px 10px;
+  padding: clamp(8px, 0.75vw, 11px) clamp(6px, 0.7vw, 10px);
   border-bottom: 1px solid var(--line);
   text-align: left;
   white-space: normal;
@@ -403,7 +419,7 @@ td:nth-child(1) {
 
 th:nth-child(2),
 td:nth-child(2) {
-  width: 15%;
+  width: 14%;
 }
 
 th:nth-child(3),
@@ -420,7 +436,7 @@ th:nth-child(5),
 td:nth-child(5),
 th:nth-child(6),
 td:nth-child(6) {
-  width: 11%;
+  width: 10%;
 }
 
 th:nth-child(7),
@@ -440,7 +456,7 @@ th:nth-child(12),
 td:nth-child(12),
 th:nth-child(13),
 td:nth-child(13) {
-  width: 8%;
+  width: 7.5%;
 }
 
 .sortHeader {
@@ -611,5 +627,42 @@ tbody tr:hover {
 
   .tableWrap {
     max-height: none;
+    overflow-x: auto;
+  }
+
+  table {
+    min-width: 980px;
+  }
+}
+
+@media (max-width: 520px) {
+  .app {
+    width: min(100% - 16px, 1680px);
+  }
+
+  h1 {
+    font-size: 30px;
+  }
+
+  .summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .summary > div,
+  .metricCard,
+  .pickCard {
+    padding: 10px;
+  }
+
+  .summary span {
+    font-size: 20px;
+  }
+
+  .panelHeader {
+    flex-direction: column;
+  }
+
+  .picksGrid {
+    grid-template-columns: 1fr;
   }
 }

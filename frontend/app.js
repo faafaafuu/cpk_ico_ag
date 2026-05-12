@@ -62,7 +62,7 @@ const translations = {
     topPicksEyebrow: "Analytical shortlist",
     topPicksTitle: "Deep-research shortlist",
     notFinancialAdvice: "Not financial advice",
-    allocation: "Deposit",
+    conviction: "Conviction",
     saleTerms: "Sale terms",
     why: "Why it can work",
     risks: "Why skip / wait",
@@ -127,7 +127,7 @@ const translations = {
     topPicksEyebrow: "Аналитический шортлист",
     topPicksTitle: "Шортлист глубокого ресерча",
     notFinancialAdvice: "Не финансовый совет",
-    allocation: "Депозит",
+    conviction: "Уверенность",
     saleTerms: "Sale / вестинг",
     why: "Почему может сработать",
     risks: "Почему скип / ждать",
@@ -149,7 +149,7 @@ const translations = {
 const researchNotes = {
   "zkcross-network": {
     verdict: "observe",
-    allocation: 0.25,
+    stars: 3,
     confidence: "medium",
     terms: {
       en: "IDO TBA; price $0.025; CryptoRank shows ~$7.47M target raise. Public/IDO rounds: 20% TGE, 3M cliff, 6M vesting. Supply 2.1B CROSSAI; FDV ~$52.5M; team 18%, 12M cliff + 36M vesting.",
@@ -171,7 +171,7 @@ const researchNotes = {
   },
   zesh: {
     verdict: "observe",
-    allocation: 0.25,
+    stars: 3,
     confidence: "medium",
     terms: {
       en: "Price $0.006; raise in our data $420K, TokenRadar shows ~$570K total. IDO terms mention 35% at TGE + 3M cliff on some rounds. Sale allocation ~17%; team 12%; strategic 7.6%.",
@@ -194,7 +194,7 @@ const researchNotes = {
   },
   "datai-network": {
     verdict: "observe",
-    allocation: 0.5,
+    stars: 4,
     confidence: "medium",
     terms: {
       en: "Upcoming IDO; price $0.025; raise $600K in our data; ChainGPT Pad. Max supply 1B DATAI; CMC self-reported circulating supply ~41.22M. Vesting/cliff not found in reliable public source yet.",
@@ -217,7 +217,7 @@ const researchNotes = {
   },
   "spin-fi": {
     verdict: "observe",
-    allocation: 0.25,
+    stars: 3,
     confidence: "low",
     terms: {
       en: "Price $0.04; public raise $3.15M in our data; Tokensoft. Total raised shown in our data ~$12.43M. TGE/vesting/cliff need confirmation before entry.",
@@ -239,7 +239,7 @@ const researchNotes = {
   },
   quranium: {
     verdict: "observe",
-    allocation: 0.25,
+    stars: 3,
     confidence: "medium",
     terms: {
       en: "Price $0.0667; raise $200K in our data; Animoca Brands visible as backer. Max supply listed by CMC as 2.1B QRN. Vesting/cliff and sale venue need confirmation.",
@@ -262,7 +262,7 @@ const researchNotes = {
   },
   cineflicks: {
     verdict: "skip",
-    allocation: 0,
+    stars: 1,
     confidence: "medium",
     terms: {
       en: "Start shown as May 19, 2026; token price $0.0025; our data shows $75.5M raise and no visible investors/launchpads.",
@@ -350,6 +350,7 @@ function renderTopPicks() {
   const picks = state.rows
     .filter((row) => row.status === "upcoming" && researchNotes[row.id])
     .map((row) => ({ ...row, research: researchNotes[row.id] }))
+    .filter((row) => row.research.verdict !== "skip")
     .sort((a, b) => verdictWeight(b.research.verdict) - verdictWeight(a.research.verdict) || b.rating - a.rating);
 
   if (!picks.length) {
@@ -380,7 +381,10 @@ function renderPick(row) {
         <span class="miniBadge">${formatMoney(row.raised_amount)}</span>
         <span class="miniBadge">${escapeHtml(t("rating"))}: ${row.rating}</span>
       </div>
-      <div class="allocation">${escapeHtml(t("allocation"))}: ${note.allocation}%</div>
+      <div class="starsLine">
+        <span>${escapeHtml(t("conviction"))}</span>
+        <strong aria-label="${note.stars} of 5">${renderStars(note.stars)}</strong>
+      </div>
       <div class="termsBlock">
         <strong>${escapeHtml(t("saleTerms"))}</strong>
         <p>${escapeHtml(localized(note.terms))}</p>
@@ -406,6 +410,10 @@ function localized(value) {
 
 function verdictWeight(verdict) {
   return { participate: 3, observe: 2, skip: 1 }[verdict] || 0;
+}
+
+function renderStars(count) {
+  return `${"★".repeat(count)}${"☆".repeat(5 - count)}`;
 }
 
 function calculateRating(row) {
