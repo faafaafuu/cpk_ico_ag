@@ -41,7 +41,7 @@ pip install -r requirements.txt
 - Generate an API key.
 - Copy `.env.example` to `.env` and set `CRYPTORANK_API_KEY`.
 
-The public dashboard currently documents `x-api-key: YOUR_KEY`. The CLI also supports bearer auth through `CRYPTORANK_AUTH_MODE=bearer` if your plan/docs require it. Official API docs are linked from https://api.cryptorank.io/v2/docs; the page is JavaScript-rendered, so endpoint and response parsing are intentionally configurable and tolerant.
+The public dashboard currently documents `x-api-key: YOUR_KEY`. The CLI also supports bearer auth through `CRYPTORANK_AUTH_MODE=bearer` if your plan/docs require it. Official API docs are linked from https://api.cryptorank.io/v2/docs; the page is JavaScript-rendered, so endpoint and response parsing are intentionally configurable and tolerant. CryptoRank's current public pricing page lists token sales under `/currencies/public-sales`; the client first tries legacy `/ico/{status}` endpoints and then falls back to `/currencies/public-sales`.
 
 ## Run
 
@@ -94,4 +94,3 @@ pytest
   }
 ]
 ```
-
