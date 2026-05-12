@@ -95,22 +95,32 @@ h1 {
   margin-bottom: 16px;
 }
 
-.insights {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(120px, 0.7fr)) repeat(2, minmax(220px, 1.4fr));
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-.insightCard {
-  min-width: 0;
+.benchmarkPanel,
+.picksPanel {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel);
-  padding: 12px 14px;
+  margin-bottom: 16px;
+  padding: 14px;
 }
 
-.insightCard span {
+.benchmarkGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.metricCard {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #0c1018;
+  padding: 12px;
+}
+
+.metricCard span,
+.patternRows span {
   display: block;
   color: var(--muted);
   font-size: 12px;
@@ -118,22 +128,51 @@ h1 {
   text-transform: uppercase;
 }
 
-.insightCard strong {
+.metricCard strong {
   display: block;
   margin-top: 6px;
-  overflow: hidden;
   color: var(--text);
-  font-size: 18px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: 22px;
 }
 
-.picksPanel {
+.metricCard small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.patternRows {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.patternChip {
   border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--panel);
-  margin-bottom: 16px;
-  padding: 14px;
+  border-radius: 999px;
+  background: var(--panel-2);
+  color: var(--text);
+  cursor: default;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 9px;
+}
+
+.patternChip.clickable {
+  cursor: pointer;
+}
+
+.patternChip.clickable:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .panelHeader {
@@ -499,7 +538,8 @@ tbody tr:hover {
 
   .summary,
   .topActions,
-  .insights,
+  .benchmarkGrid,
+  .patternRows,
   .picksGrid,
   .controls {
     grid-template-columns: 1fr;

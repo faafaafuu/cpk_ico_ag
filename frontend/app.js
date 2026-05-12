@@ -1,5 +1,6 @@
 const state = {
   rows: [],
+  pastRows: [],
   categories: [],
   historicalPatterns: {
     categories10x: new Map(),
@@ -45,11 +46,19 @@ const translations = {
     athRoi: "ATH ROI",
     investors: "Investors",
     launchpads: "Launchpads",
+    benchmarkEyebrow: "Past-project benchmark",
+    benchmarkTitle: "What historically produced ATH multiples",
     ath10x: "ATH 10x+",
     ath50x: "ATH 50x+",
     ath100x: "ATH 100x+",
+    failedBucket: "ATH below 0.25x",
+    median10xRaise: "Median 10x+ raise",
+    usedInRating: "Used in rating bonus",
     top10xCategories: "Top 10x+ categories",
     top10xBackers: "Top 10x+ backers",
+    top10xLaunchpads: "Top 10x+ launchpads",
+    ofAthSample: "of ATH sample",
+    athSample: "ATH sample",
     topPicksEyebrow: "Analytical shortlist",
     topPicksTitle: "Top projects to research",
     notFinancialAdvice: "Not financial advice",
@@ -96,11 +105,19 @@ const translations = {
     athRoi: "ATH ROI",
     investors: "Инвесторы",
     launchpads: "Лаунчпады",
+    benchmarkEyebrow: "Исторический benchmark",
+    benchmarkTitle: "Что чаще давало ATH-иксы",
     ath10x: "ATH 10x+",
     ath50x: "ATH 50x+",
     ath100x: "ATH 100x+",
+    failedBucket: "ATH ниже 0.25x",
+    median10xRaise: "Медианный raise 10x+",
+    usedInRating: "Используется в бонусе рейтинга",
     top10xCategories: "Топ категорий 10x+",
     top10xBackers: "Топ инвесторов 10x+",
+    top10xLaunchpads: "Топ launchpads 10x+",
+    ofAthSample: "от ATH-выборки",
+    athSample: "ATH-выборка",
     topPicksEyebrow: "Аналитический шортлист",
     topPicksTitle: "Топ проектов для ресерча",
     notFinancialAdvice: "Не финансовый совет",
@@ -133,8 +150,16 @@ const els = {
   ath10xCount: document.querySelector("#ath10xCount"),
   ath50xCount: document.querySelector("#ath50xCount"),
   ath100xCount: document.querySelector("#ath100xCount"),
+  ath10xShare: document.querySelector("#ath10xShare"),
+  ath50xShare: document.querySelector("#ath50xShare"),
+  ath100xShare: document.querySelector("#ath100xShare"),
+  failedCount: document.querySelector("#failedCount"),
+  failedShare: document.querySelector("#failedShare"),
+  median10xRaise: document.querySelector("#median10xRaise"),
+  benchmarkSample: document.querySelector("#benchmarkSample"),
   topCategories: document.querySelector("#topCategories"),
   topBackers: document.querySelector("#topBackers"),
+  topLaunchpads: document.querySelector("#topLaunchpads"),
   topPicks: document.querySelector("#topPicks"),
 };
 
@@ -149,6 +174,7 @@ async function loadData() {
       fetch("/output/upcoming_icos.json").then((response) => response.json()),
     ]);
 
+    state.pastRows = past;
     buildHistoricalPatterns(past);
 
     state.rows = [...past, ...upcoming].map((row) => ({
@@ -292,11 +318,36 @@ function historicalPatternBonus(row) {
 
 function updateInsights(pastRows) {
   const withAth = pastRows.filter((row) => Number(row.ath_roi || 0) > 0);
-  els.ath10xCount.textContent = formatNumber(withAth.filter((row) => Number(row.ath_roi) >= 10).length);
-  els.ath50xCount.textContent = formatNumber(withAth.filter((row) => Number(row.ath_roi) >= 50).length);
-  els.ath100xCount.textContent = formatNumber(withAth.filter((row) => Number(row.ath_roi) >= 100).length);
-  els.topCategories.textContent = topLabels(state.historicalPatterns.categories10x, 4);
-  els.topBackers.textContent = topLabels(state.historicalPatterns.investors10x, 4);
+  const count10x = withAth.filter((row) => Number(row.ath_roi) >= 10).length;
+  const count50x = withAth.filter((row) => Number(row.ath_roi) >= 50).length;
+  const count100x = withAth.filter((row) => Number(row.ath_roi) >= 100).length;
+  const failed = withAth.filter((row) => Number(row.ath_roi) <= 0.25).length;
+
+  els.benchmarkSample.textContent = `${t("athSample")}: ${formatNumber(withAth.length)}`;
+  els.ath10xCount.textContent = formatNumber(count10x);
+  els.ath50xCount.textContent = formatNumber(count50x);
+  els.ath100xCount.textContent = formatNumber(count100x);
+  els.failedCount.textContent = formatNumber(failed);
+  els.ath10xShare.textContent = `${formatPercent(count10x, withAth.length)} ${t("ofAthSample")}`;
+  els.ath50xShare.textContent = `${formatPercent(count50x, withAth.length)} ${t("ofAthSample")}`;
+  els.ath100xShare.textContent = `${formatPercent(count100x, withAth.length)} ${t("ofAthSample")}`;
+  els.failedShare.textContent = `${formatPercent(failed, withAth.length)} ${t("ofAthSample")}`;
+  els.median10xRaise.textContent = formatMoney(state.historicalPatterns.medianRaise10x);
+
+  els.topCategories.innerHTML = renderPatternChips(
+    state.historicalPatterns.categories10x,
+    7,
+    "category"
+  );
+  els.topBackers.innerHTML = renderPatternChips(state.historicalPatterns.investors10x, 7);
+  els.topLaunchpads.innerHTML = renderPatternChips(state.historicalPatterns.launchpads10x, 7);
+  els.topCategories.querySelectorAll("[data-category]").forEach((button) => {
+    button.addEventListener("click", () => {
+      els.categoryFilter.value = button.dataset.category;
+      els.statusFilter.value = "all";
+      render();
+    });
+  });
 }
 
 function countBy(rows, getter) {
@@ -318,12 +369,18 @@ function countByNested(rows, key) {
   return counts;
 }
 
-function topLabels(map, limit) {
+function renderPatternChips(map, limit, type = "") {
   return [...map.entries()]
     .sort((a, b) => b[1] - a[1])
     .slice(0, limit)
-    .map(([name]) => name)
-    .join(", ");
+    .map(([name, count]) => {
+      const attrs = type === "category"
+        ? ` data-category="${escapeHtml(name)}" class="patternChip clickable"`
+        : ` class="patternChip"`;
+      const tag = type === "category" ? "button" : "span";
+      return `<${tag}${attrs}>${escapeHtml(name)} · ${formatNumber(count)}</${tag}>`;
+    })
+    .join("");
 }
 
 function rankInMap(map, value) {
@@ -512,6 +569,11 @@ function formatNumber(value) {
   return Number(value || 0).toLocaleString("en-US");
 }
 
+function formatPercent(value, total) {
+  if (!total) return "0%";
+  return `${trimDecimals((value / total) * 100, 1)}%`;
+}
+
 function formatCompactNumber(value) {
   const abs = Math.abs(value);
   if (abs >= 1_000_000_000) return `${trimDecimals(value / 1_000_000_000, 1)}B`;
@@ -630,6 +692,7 @@ els.languageSelect.addEventListener("change", () => {
   localStorage.setItem("icoDashboardLanguage", state.language);
   applyTranslations();
   updateSummary();
+  updateInsights(state.pastRows);
   renderTopPicks();
   render();
 });

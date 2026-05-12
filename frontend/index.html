@@ -83,26 +83,54 @@
         </label>
       </section>
 
-      <section class="insights" aria-label="Historical benchmark">
-        <div class="insightCard">
-          <span data-i18n="ath10x">ATH 10x+</span>
-          <strong id="ath10xCount">0</strong>
+      <section class="benchmarkPanel" aria-label="Historical benchmark">
+        <div class="panelHeader">
+          <div>
+            <span class="panelEyebrow" data-i18n="benchmarkEyebrow">Past-project benchmark</span>
+            <h2 data-i18n="benchmarkTitle">What historically produced ATH multiples</h2>
+          </div>
+          <span class="disclaimer" id="benchmarkSample">-</span>
         </div>
-        <div class="insightCard">
-          <span data-i18n="ath50x">ATH 50x+</span>
-          <strong id="ath50xCount">0</strong>
+        <div class="benchmarkGrid">
+          <div class="metricCard">
+            <span data-i18n="ath10x">ATH 10x+</span>
+            <strong id="ath10xCount">0</strong>
+            <small id="ath10xShare">-</small>
+          </div>
+          <div class="metricCard">
+            <span data-i18n="ath50x">ATH 50x+</span>
+            <strong id="ath50xCount">0</strong>
+            <small id="ath50xShare">-</small>
+          </div>
+          <div class="metricCard">
+            <span data-i18n="ath100x">ATH 100x+</span>
+            <strong id="ath100xCount">0</strong>
+            <small id="ath100xShare">-</small>
+          </div>
+          <div class="metricCard">
+            <span data-i18n="failedBucket">ATH below 0.25x</span>
+            <strong id="failedCount">0</strong>
+            <small id="failedShare">-</small>
+          </div>
+          <div class="metricCard">
+            <span data-i18n="median10xRaise">Median 10x+ raise</span>
+            <strong id="median10xRaise">-</strong>
+            <small data-i18n="usedInRating">Used in rating bonus</small>
+          </div>
         </div>
-        <div class="insightCard">
-          <span data-i18n="ath100x">ATH 100x+</span>
-          <strong id="ath100xCount">0</strong>
-        </div>
-        <div class="insightCard wide">
-          <span data-i18n="top10xCategories">Top 10x+ categories</span>
-          <strong id="topCategories">-</strong>
-        </div>
-        <div class="insightCard wide">
-          <span data-i18n="top10xBackers">Top 10x+ backers</span>
-          <strong id="topBackers">-</strong>
+        <div class="patternRows">
+          <div>
+            <span data-i18n="top10xCategories">Top 10x+ categories</span>
+            <div id="topCategories" class="chipRow"></div>
+          </div>
+          <div>
+            <span data-i18n="top10xBackers">Top 10x+ backers</span>
+            <div id="topBackers" class="chipRow"></div>
+          </div>
+          <div>
+            <span data-i18n="top10xLaunchpads">Top 10x+ launchpads</span>
+            <div id="topLaunchpads" class="chipRow"></div>
+          </div>
         </div>
       </section>
 
