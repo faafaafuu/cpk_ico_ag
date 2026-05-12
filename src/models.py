@@ -77,6 +77,8 @@ class ICOItem(BaseModel):
     id: Optional[str] = None
     name: Optional[str] = None
     symbol: Optional[str] = None
+    image: Optional[str] = None
+    cryptorank_url: Optional[str] = None
     start_date: Optional[str] = None
     end_date: Optional[str] = None
     status: Optional[str] = None
@@ -87,6 +89,11 @@ class ICOItem(BaseModel):
     twitter: Optional[str] = None
     telegram: Optional[str] = None
     token_price: Optional[float] = None
+    current_price: Optional[float] = None
+    roi: Optional[float] = None
+    ath_roi: Optional[float] = None
+    investors: Optional[List[Dict[str, Any]]] = None
+    launchpads: Optional[List[Dict[str, Any]]] = None
     tokenomics: Optional[Dict[str, Any]] = None
 
     @root_validator(pre=True)
@@ -98,14 +105,18 @@ class ICOItem(BaseModel):
 
         links = values.get("links") if isinstance(values.get("links"), dict) else {}
         social = values.get("social") if isinstance(values.get("social"), dict) else {}
+        identifier = _first_present(values, ("id", "key", "slug"))
         category = values.get("category")
         if isinstance(category, dict):
             category = _first_present(category, ("name", "key", "slug"))
 
         return {
-            "id": _first_present(values, ("id", "key", "slug")),
+            "id": identifier,
             "name": _first_present(values, ("name", "title")),
             "symbol": _first_present(values, ("symbol", "ticker")),
+            "image": _first_present(values, ("image", "logo", "icon")),
+            "cryptorank_url": _first_present(values, ("cryptorank_url", "url"))
+            or (f"https://cryptorank.io/ico/{identifier}" if identifier else None),
             "start_date": _first_present(
                 values,
                 ("start_date", "startDate", "start", "dateStart", "when"),
@@ -135,6 +146,11 @@ class ICOItem(BaseModel):
                 values,
                 ("token_price", "tokenPrice", "salePrice", "price", "priceUSD"),
             ),
+            "current_price": _first_present(values, ("current_price", "currentPrice", "price")),
+            "roi": _first_present(values, ("roi", "currentRoi")),
+            "ath_roi": _first_present(values, ("ath_roi", "athRoi", "athROI")),
+            "investors": _first_present(values, ("investors", "funds")),
+            "launchpads": _first_present(values, ("launchpads", "platforms")),
             "tokenomics": _first_present(
                 values,
                 ("tokenomics", "tokenEconomics", "vesting", "tokenInfo"),
@@ -145,6 +161,8 @@ class ICOItem(BaseModel):
         "id",
         "name",
         "symbol",
+        "image",
+        "cryptorank_url",
         "status",
         "raised_currency",
         "category",
@@ -157,7 +175,7 @@ class ICOItem(BaseModel):
         """Safely cast scalar fields to string."""
         return _safe_str(value)
 
-    @validator("raised_amount", "token_price", pre=True)
+    @validator("raised_amount", "token_price", "current_price", "roi", "ath_roi", pre=True)
     def cast_optional_float(cls, value: Any) -> Optional[float]:
         """Safely cast numeric fields to float."""
         return _safe_float(value)
@@ -176,6 +194,23 @@ class ICOItem(BaseModel):
             return value
         logger.warning("Unexpected type for tokenomics field %s: %r", type(value), value)
         return None
+
+    @validator("investors", "launchpads", pre=True)
+    def cast_named_lists(cls, value: Any) -> Optional[List[Dict[str, Any]]]:
+        """Keep investors and launchpads as lists of dictionaries."""
+        if value in (None, ""):
+            return None
+        if not isinstance(value, list):
+            logger.warning("Unexpected type for list field %s: %r", type(value), value)
+            return None
+
+        normalized: List[Dict[str, Any]] = []
+        for item in value:
+            if isinstance(item, dict):
+                normalized.append(item)
+            else:
+                logger.warning("Unexpected list item type %s: %r", type(item), item)
+        return normalized or None
 
 
 class ICOResponse(BaseModel):

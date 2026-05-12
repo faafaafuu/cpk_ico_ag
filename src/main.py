@@ -89,8 +89,9 @@ def write_csv(path: Path, items: Iterable[ICOItem]) -> None:
         writer = csv.DictWriter(file_obj, fieldnames=fieldnames)
         writer.writeheader()
         for row in rows:
-            if isinstance(row.get("tokenomics"), dict):
-                row["tokenomics"] = json.dumps(row["tokenomics"], ensure_ascii=False)
+            for key, value in row.items():
+                if isinstance(value, (dict, list)):
+                    row[key] = json.dumps(value, ensure_ascii=False)
             writer.writerow(row)
 
 

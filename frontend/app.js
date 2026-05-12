@@ -21,6 +21,8 @@ const translations = {
     any: "Any",
     sort: "Sort",
     sortRating: "Rating high to low",
+    sortRoi: "ROI high to low",
+    sortAthRoi: "ATH ROI high to low",
     sortRaised: "Raised high to low",
     sortDate: "Date newest",
     sortName: "Name A-Z",
@@ -30,6 +32,11 @@ const translations = {
     end: "End",
     raised: "Raised",
     tokenPrice: "Token price",
+    currentPrice: "Current price",
+    roi: "ROI",
+    athRoi: "ATH ROI",
+    investors: "Investors",
+    launchpads: "Launchpads",
     rows: "rows",
     loaded: "Loaded from output JSON",
     loading: "Loading data...",
@@ -54,6 +61,8 @@ const translations = {
     any: "Любой",
     sort: "Сортировка",
     sortRating: "Рейтинг по убыванию",
+    sortRoi: "ROI по убыванию",
+    sortAthRoi: "ATH ROI по убыванию",
     sortRaised: "Сборы по убыванию",
     sortDate: "Сначала новые даты",
     sortName: "Название A-Z",
@@ -63,6 +72,11 @@ const translations = {
     end: "Конец",
     raised: "Собрано",
     tokenPrice: "Цена токена",
+    currentPrice: "Текущая цена",
+    roi: "ROI",
+    athRoi: "ATH ROI",
+    investors: "Инвесторы",
+    launchpads: "Лаунчпады",
     rows: "строк",
     loaded: "Загружено из output JSON",
     loading: "Загрузка данных...",
@@ -127,6 +141,9 @@ function calculateRating(row) {
   if (row.start_date) score += 8;
   if (row.end_date) score += 4;
   if (price > 0) score += 8;
+  if (Number(row.roi || 0) > 1) score += 8;
+  if (Number(row.ath_roi || 0) > 5) score += 8;
+  if (Array.isArray(row.investors) && row.investors.length) score += 10;
   if (raised >= 10_000_000) score += 28;
   else if (raised >= 2_000_000) score += 22;
   else if (raised >= 500_000) score += 16;
@@ -185,6 +202,12 @@ function sortRows(rows, sortKey) {
     if (sortKey === "raised_desc") {
       return Number(b.raised_amount || 0) - Number(a.raised_amount || 0);
     }
+    if (sortKey === "roi_desc") {
+      return Number(b.roi || 0) - Number(a.roi || 0);
+    }
+    if (sortKey === "ath_roi_desc") {
+      return Number(b.ath_roi || 0) - Number(a.ath_roi || 0);
+    }
     if (sortKey === "date_desc") {
       return dateValue(b.start_date) - dateValue(a.start_date);
     }
@@ -202,18 +225,47 @@ function renderRow(row) {
       <td><span class="rating ${ratingClass}">${row.rating}</span></td>
       <td>
         <div class="project">
-          <strong>${escapeHtml(row.name || t("unknown"))}</strong>
-          <span>${escapeHtml(row.symbol || t("notAvailable"))}</span>
+          ${renderLogo(row)}
+          <div class="projectText">
+            <a href="${escapeHtml(row.cryptorank_url || "#")}" target="_blank" rel="noopener noreferrer">
+              ${escapeHtml(row.name || t("unknown"))}
+            </a>
+            <span>${escapeHtml(row.symbol || t("notAvailable"))}</span>
+          </div>
         </div>
       </td>
       <td><span class="pill ${escapeHtml(row.status || "")}">${escapeHtml(translateStatus(row.status))}</span></td>
       <td>${escapeHtml(row.category || t("notAvailable"))}</td>
+      <td>${renderNamedList(row.investors)}</td>
+      <td>${renderNamedList(row.launchpads)}</td>
       <td>${escapeHtml(row.start_date || t("notAvailable"))}</td>
       <td>${escapeHtml(row.end_date || t("notAvailable"))}</td>
       <td>${formatMoney(row.raised_amount)}</td>
       <td>${formatPrice(row.token_price)}</td>
+      <td>${formatPrice(row.current_price)}</td>
+      <td>${formatMultiple(row.roi)}</td>
+      <td>${formatMultiple(row.ath_roi)}</td>
     </tr>
   `;
+}
+
+function renderLogo(row) {
+  if (!row.image) {
+    return '<span class="projectLogo" aria-hidden="true"></span>';
+  }
+  return `<img class="projectLogo" src="${escapeHtml(row.image)}" alt="" loading="lazy" />`;
+}
+
+function renderNamedList(items) {
+  if (!Array.isArray(items) || !items.length) {
+    return `<span class="muted">${escapeHtml(t("notAvailable"))}</span>`;
+  }
+  const names = items
+    .map((item) => item && item.name)
+    .filter(Boolean)
+    .slice(0, 4);
+  const suffix = items.length > names.length ? ` +${items.length - names.length}` : "";
+  return `<span class="compactList" title="${escapeHtml(names.join(", "))}">${escapeHtml(names.join(", ") + suffix)}</span>`;
 }
 
 function dateValue(value) {
@@ -236,6 +288,17 @@ function formatPrice(value) {
   const number = Number(value || 0);
   if (!number) return `<span class="muted">${escapeHtml(t("notAvailable"))}</span>`;
   return `$${number.toLocaleString("en-US", { maximumFractionDigits: 8 })}`;
+}
+
+function formatMultiple(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number) || number === 0) {
+    return `<span class="muted">${escapeHtml(t("notAvailable"))}</span>`;
+  }
+  const className = number >= 1 ? "positive" : "negative";
+  return `<span class="${className}">${number.toLocaleString("en-US", {
+    maximumFractionDigits: 2,
+  })}x</span>`;
 }
 
 function formatNumber(value) {
