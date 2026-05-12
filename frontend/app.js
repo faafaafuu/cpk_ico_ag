@@ -60,10 +60,16 @@ const translations = {
     ofAthSample: "of ATH sample",
     athSample: "ATH sample",
     topPicksEyebrow: "Analytical shortlist",
-    topPicksTitle: "Top projects to research",
+    topPicksTitle: "Deep-research shortlist",
     notFinancialAdvice: "Not financial advice",
     allocation: "Deposit",
-    why: "Why",
+    saleTerms: "Sale terms",
+    why: "Why it can work",
+    risks: "Why skip / wait",
+    sources: "Sources",
+    participate: "Participate",
+    observe: "Observe",
+    skip: "Skip",
     noPicks: "No qualifying upcoming projects",
     rows: "rows",
     loaded: "Loaded from output JSON",
@@ -119,10 +125,16 @@ const translations = {
     ofAthSample: "от ATH-выборки",
     athSample: "ATH-выборка",
     topPicksEyebrow: "Аналитический шортлист",
-    topPicksTitle: "Топ проектов для ресерча",
+    topPicksTitle: "Шортлист глубокого ресерча",
     notFinancialAdvice: "Не финансовый совет",
     allocation: "Депозит",
-    why: "Почему",
+    saleTerms: "Sale / вестинг",
+    why: "Почему может сработать",
+    risks: "Почему скип / ждать",
+    sources: "Источники",
+    participate: "Участвовать",
+    observe: "Наблюдать",
+    skip: "Скип",
     noPicks: "Нет подходящих upcoming-проектов",
     rows: "строк",
     loaded: "Загружено из output JSON",
@@ -131,6 +143,143 @@ const translations = {
     showingFirst: "Показаны первые 1 000 строк после фильтров",
     unknown: "Неизвестно",
     notAvailable: "Нет данных",
+  },
+};
+
+const researchNotes = {
+  "zkcross-network": {
+    verdict: "observe",
+    allocation: 0.25,
+    confidence: "medium",
+    terms: {
+      en: "IDO TBA; price $0.025; CryptoRank shows ~$7.47M target raise. Public/IDO rounds: 20% TGE, 3M cliff, 6M vesting. Supply 2.1B CROSSAI; FDV ~$52.5M; team 18%, 12M cliff + 36M vesting.",
+      ru: "IDO TBA; цена $0.025; CryptoRank показывает цель сбора около $7.47M. Public/IDO: 20% TGE, 3 мес. cliff, 6 мес. vesting. Supply 2.1B CROSSAI; FDV ~$52.5M; team 18%, 12 мес. cliff + 36 мес. vesting.",
+    },
+    positives: {
+      en: ["DeFi + chain abstraction narrative matches strong 10x+ historical categories.", "Tokenomics page is public and has explicit cliff/vesting schedule.", "Low initial unlock excluding liquidity is documented at ~4.9%."],
+      ru: ["DeFi + chain abstraction совпадает с сильными историческими 10x+ категориями.", "Есть публичная tokenomics-страница с cliff/vesting.", "Документирован низкий initial unlock без liquidity около 4.9%."],
+    },
+    risks: {
+      en: ["Public round has only 6M vesting after 3M cliff, so sell pressure can arrive quickly.", "TGE date is still TBA.", "Only one visible named backer in our data, so investor signal is not strong."],
+      ru: ["У public round всего 6 мес. vesting после 3 мес. cliff — давление продаж может прийти быстро.", "Дата TGE пока TBA.", "В наших данных виден только один named backer, investor-signal слабый."],
+    },
+    sources: [
+      ["CryptoRank", "https://cryptorank.io/ico/zkcross-network"],
+      ["Tokenomics", "https://zkcross-network.gitbook.io/zkcrossnetwork/the-cross-token/crossai-tokenomics"],
+      ["Token utility", "https://zkcross-network.gitbook.io/zkcrossnetwork/the-cross-token/crossai-token-utilites"],
+    ],
+  },
+  zesh: {
+    verdict: "observe",
+    allocation: 0.25,
+    confidence: "medium",
+    terms: {
+      en: "Price $0.006; raise in our data $420K, TokenRadar shows ~$570K total. IDO terms mention 35% at TGE + 3M cliff on some rounds. Sale allocation ~17%; team 12%; strategic 7.6%.",
+      ru: "Цена $0.006; в наших данных raise $420K, TokenRadar показывает около $570K. По IDO-условиям встречается 35% TGE + 3 мес. cliff. Sale allocation ~17%; team 12%; strategic 7.6%.",
+    },
+    positives: {
+      en: ["AI/social growth tooling is a live narrative, not just a meme category.", "Public team page exists with named roles.", "Small raise is closer to historical 10x+ median than oversized sales."],
+      ru: ["AI/social growth tooling — актуальный narrative, не просто meme.", "Есть публичная team page с ролями.", "Небольшой raise ближе к исторической медиане 10x+, чем раздутые продажи."],
+    },
+    risks: {
+      en: ["35% TGE unlock is high and can create early sell pressure.", "Need independent verification of product traction and real customers.", "Some leadership role info is incomplete/TBA."],
+      ru: ["35% unlock на TGE — высокий, может дать раннее давление.", "Нужно независимо проверить traction и реальных клиентов.", "Часть team info неполная/TBA."],
+    },
+    sources: [
+      ["CryptoRank", "https://cryptorank.io/ico/zesh"],
+      ["Website", "https://zesh.ai/"],
+      ["TokenRadar", "https://tokenradar.io/ico/zesh"],
+      ["CoinCarp", "https://www.coincarp.com/currencies/zesh/project-info/"],
+    ],
+  },
+  "datai-network": {
+    verdict: "observe",
+    allocation: 0.5,
+    confidence: "medium",
+    terms: {
+      en: "Upcoming IDO; price $0.025; raise $600K in our data; ChainGPT Pad. Max supply 1B DATAI; CMC self-reported circulating supply ~41.22M. Vesting/cliff not found in reliable public source yet.",
+      ru: "Upcoming IDO; цена $0.025; raise $600K в наших данных; ChainGPT Pad. Max supply 1B DATAI; CMC self-reported circulating supply ~41.22M. Надёжный публичный vesting/cliff пока не найден.",
+    },
+    positives: {
+      en: ["Product claims concrete usage metrics: smart contracts labeled, API requests, indexed transactions.", "Docs show testnet/dev flow, not only marketing copy.", "AI x on-chain data fits current market narrative."],
+      ru: ["Есть конкретные product metrics: размеченные smart contracts, API-запросы, indexed transactions.", "Docs показывают testnet/dev flow, не только маркетинг.", "AI x on-chain data хорошо ложится в текущий narrative."],
+    },
+    risks: {
+      en: ["No reliable vesting/cliff source found, so allocation must stay small.", "Need GitHub/code and customer verification.", "Multiple lookalike domains exist, so source hygiene matters."],
+      ru: ["Надёжный vesting/cliff не найден — размер позиции только малый.", "Нужно проверить GitHub/code и клиентов.", "Есть похожие домены, нужна аккуратная проверка источников."],
+    },
+    sources: [
+      ["CryptoRank", "https://cryptorank.io/ico/datai-network"],
+      ["Website", "https://datai.network/"],
+      ["Docs", "https://datai.network/docs/introduction/overview/"],
+      ["CoinMarketCap", "https://coinmarketcap.com/currencies/datai-network"],
+    ],
+  },
+  "spin-fi": {
+    verdict: "observe",
+    allocation: 0.25,
+    confidence: "low",
+    terms: {
+      en: "Price $0.04; public raise $3.15M in our data; Tokensoft. Total raised shown in our data ~$12.43M. TGE/vesting/cliff need confirmation before entry.",
+      ru: "Цена $0.04; public raise $3.15M в наших данных; Tokensoft. Total raised в данных около $12.43M. TGE/vesting/cliff нужно подтвердить до входа.",
+    },
+    positives: {
+      en: ["Strong investor signal in our data: Spartan Group, GSR, Lemniscap, LongHash, Lattice.", "Blockchain infrastructure category is represented in historical winners.", "Tokensoft sale venue is a positive process signal."],
+      ru: ["Сильный investor-signal: Spartan Group, GSR, Lemniscap, LongHash, Lattice.", "Blockchain infrastructure встречалась среди исторических winners.", "Tokensoft как площадка продажи — плюс к процессу."],
+    },
+    risks: {
+      en: ["Insufficient public tokenomics/vesting in verified sources.", "Tech complexity is high; needs testnet, audits and real developer usage.", "Total raise is not tiny, so valuation discipline matters."],
+      ru: ["Не хватает подтверждённой публичной tokenomics/vesting.", "Техническая сложность высокая: нужны testnet, audits и dev usage.", "Total raise немаленький, важна valuation discipline."],
+    },
+    sources: [
+      ["CryptoRank", "https://cryptorank.io/ico/spin-fi"],
+      ["Website", "https://multivm.io/"],
+      ["Tokensoft", "https://www.tokensoft.com/"],
+    ],
+  },
+  quranium: {
+    verdict: "observe",
+    allocation: 0.25,
+    confidence: "medium",
+    terms: {
+      en: "Price $0.0667; raise $200K in our data; Animoca Brands visible as backer. Max supply listed by CMC as 2.1B QRN. Vesting/cliff and sale venue need confirmation.",
+      ru: "Цена $0.0667; raise $200K в наших данных; среди backers виден Animoca Brands. Max supply по CMC — 2.1B QRN. Vesting/cliff и sale venue нужно подтвердить.",
+    },
+    positives: {
+      en: ["Animoca signal is historically relevant in 100x+ clusters.", "Post-quantum L1 is differentiated versus generic L1 copycats.", "Website claims testnet, QSafe wallet, Swiss HQ and 200k+ community."],
+      ru: ["Animoca — исторически релевантный сигнал в 100x+ кластерах.", "Post-quantum L1 отличается от обычных L1-клонов.", "Сайт заявляет testnet, QSafe wallet, Swiss HQ и 200k+ community."],
+    },
+    risks: {
+      en: ["Deep tech thesis needs code/audit validation.", "L1 market is brutally competitive.", "Vesting and unlocks are not clear enough for participate verdict."],
+      ru: ["Deep-tech тезис требует проверки кода/audit.", "L1 рынок крайне конкурентный.", "Vesting/unlocks недостаточно ясны для verdict 'участвовать'."],
+    },
+    sources: [
+      ["CryptoRank", "https://cryptorank.io/ico/quranium"],
+      ["Website", "https://www.quranium.org/"],
+      ["About", "https://www.quranium.org/about-us"],
+      ["CoinMarketCap", "https://coinmarketcap.com/currencies/quranium/"],
+    ],
+  },
+  cineflicks: {
+    verdict: "skip",
+    allocation: 0,
+    confidence: "medium",
+    terms: {
+      en: "Start shown as May 19, 2026; token price $0.0025; our data shows $75.5M raise and no visible investors/launchpads.",
+      ru: "Старт указан 19 мая 2026; цена $0.0025; в наших данных raise $75.5M и нет видимых инвесторов/launchpads.",
+    },
+    positives: {
+      en: ["Consumer streaming narrative is easy to understand.", "CMC preview page exists."],
+      ru: ["Consumer streaming narrative легко понять.", "Есть CMC preview page."],
+    },
+    risks: {
+      en: ["Oversized raise with no visible backer/launchpad signal in our data.", "Watch-to-earn has weak historical quality unless there is real user traction.", "No strong evidence yet for token demand or defensible moat."],
+      ru: ["Слишком большой raise без видимых backers/launchpad в наших данных.", "Watch-to-earn исторически слаб без реального traction.", "Пока нет сильных доказательств token demand или moat."],
+    },
+    sources: [
+      ["CryptoRank", "https://cryptorank.io/ico/cineflicks"],
+      ["CoinMarketCap", "https://coinmarketcap.com/currencies/cineflicks/"],
+    ],
   },
 };
 
@@ -199,11 +348,9 @@ async function loadData() {
 
 function renderTopPicks() {
   const picks = state.rows
-    .filter((row) => row.status === "upcoming")
-    .map((row) => ({ ...row, pickReasons: pickReasons(row), allocation: allocationFor(row) }))
-    .filter((row) => row.rating >= 45 && row.pickReasons.length >= 2 && row.allocation > 0)
-    .sort((a, b) => b.rating - a.rating || b.allocation - a.allocation)
-    .slice(0, 6);
+    .filter((row) => row.status === "upcoming" && researchNotes[row.id])
+    .map((row) => ({ ...row, research: researchNotes[row.id] }))
+    .sort((a, b) => verdictWeight(b.research.verdict) - verdictWeight(a.research.verdict) || b.rating - a.rating);
 
   if (!picks.length) {
     els.topPicks.innerHTML = `<div class="pickCard"><span class="muted">${escapeHtml(t("noPicks"))}</span></div>`;
@@ -214,8 +361,10 @@ function renderTopPicks() {
 }
 
 function renderPick(row) {
+  const note = row.research;
+  const verdictText = t(note.verdict);
   return `
-    <article class="pickCard">
+    <article class="pickCard ${escapeHtml(note.verdict)}">
       <div class="pickTop">
         ${renderLogo(row)}
         <div class="projectText">
@@ -226,45 +375,37 @@ function renderPick(row) {
         </div>
       </div>
       <div class="pickMeta">
+        <span class="miniBadge verdictBadge">${escapeHtml(verdictText)}</span>
         <span class="miniBadge">${escapeHtml(row.category || t("notAvailable"))}</span>
         <span class="miniBadge">${formatMoney(row.raised_amount)}</span>
         <span class="miniBadge">${escapeHtml(t("rating"))}: ${row.rating}</span>
       </div>
-      <div class="allocation">${escapeHtml(t("allocation"))}: ${row.allocation}%</div>
+      <div class="allocation">${escapeHtml(t("allocation"))}: ${note.allocation}%</div>
+      <div class="termsBlock">
+        <strong>${escapeHtml(t("saleTerms"))}</strong>
+        <p>${escapeHtml(localized(note.terms))}</p>
+      </div>
+      <strong class="reasonTitle">${escapeHtml(t("why"))}</strong>
       <ul class="reasonList">
-        ${row.pickReasons.slice(0, 4).map((reason) => `<li>${escapeHtml(reason)}</li>`).join("")}
+        ${localized(note.positives).map((reason) => `<li>${escapeHtml(reason)}</li>`).join("")}
       </ul>
+      <strong class="reasonTitle">${escapeHtml(t("risks"))}</strong>
+      <ul class="reasonList">
+        ${localized(note.risks).map((reason) => `<li>${escapeHtml(reason)}</li>`).join("")}
+      </ul>
+      <div class="sourceLinks">
+        ${note.sources.map(([label, url]) => `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`).join("")}
+      </div>
     </article>
   `;
 }
 
-function pickReasons(row) {
-  const reasons = [];
-  const patterns = state.historicalPatterns;
-  if (rankInMap(patterns.categories10x, row.category) <= 8) {
-    reasons.push(state.language === "ru" ? "Категория часто встречалась у 10x+ past" : "Category appears often in 10x+ past projects");
-  }
-  if ((row.investors || []).some((item) => rankInMap(patterns.investors10x, item.name) <= 12)) {
-    reasons.push(state.language === "ru" ? "Есть инвесторы из исторического 10x+ кластера" : "Has backers from historical 10x+ cluster");
-  }
-  if ((row.launchpads || []).some((item) => rankInMap(patterns.launchpads10x, item.name) <= 10)) {
-    reasons.push(state.language === "ru" ? "Launchpad совпадает с успешными past-кейсами" : "Launchpad overlaps with successful past cases");
-  }
-  if (Number(row.raised_amount || 0) > 0 && Number(row.raised_amount || 0) <= 5_000_000) {
-    reasons.push(state.language === "ru" ? "Raise не выглядит чрезмерно раздутым" : "Raise is not aggressively inflated");
-  }
-  if (row.token_price) {
-    reasons.push(state.language === "ru" ? "Есть цена токена для оценки входа" : "Token price is available for entry analysis");
-  }
-  return reasons;
+function localized(value) {
+  return value[state.language] || value.en;
 }
 
-function allocationFor(row) {
-  if (row.rating >= 70) return 1;
-  if (row.rating >= 60) return 0.75;
-  if (row.rating >= 50) return 0.5;
-  if (row.rating >= 45) return 0.25;
-  return 0;
+function verdictWeight(verdict) {
+  return { participate: 3, observe: 2, skip: 1 }[verdict] || 0;
 }
 
 function calculateRating(row) {

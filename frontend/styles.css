@@ -198,7 +198,7 @@ h1 {
 
 .picksGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -208,6 +208,18 @@ h1 {
   border-radius: 8px;
   background: #0c1018;
   padding: 12px;
+}
+
+.pickCard.observe {
+  border-color: rgba(241, 199, 91, 0.45);
+}
+
+.pickCard.participate {
+  border-color: rgba(76, 201, 167, 0.55);
+}
+
+.pickCard.skip {
+  border-color: rgba(255, 107, 107, 0.5);
 }
 
 .pickTop {
@@ -248,8 +260,31 @@ h1 {
   font-weight: 900;
 }
 
+.termsBlock {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  margin: 10px 0;
+  padding: 10px;
+}
+
+.termsBlock strong,
+.reasonTitle {
+  display: block;
+  color: var(--text);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.termsBlock p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .reasonList {
-  margin: 8px 0 0;
+  margin: 6px 0 10px;
   padding-left: 18px;
   color: var(--muted);
   font-size: 13px;
@@ -257,6 +292,30 @@ h1 {
 
 .reasonList li {
   margin: 4px 0;
+}
+
+.verdictBadge {
+  color: var(--text);
+}
+
+.sourceLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.sourceLinks a {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 12px;
+  padding: 5px 8px;
+  text-decoration: none;
+}
+
+.sourceLinks a:hover {
+  border-color: var(--accent);
 }
 
 label {
