@@ -348,8 +348,8 @@ function renderRow(row) {
       <td>${escapeHtml(row.category || t("notAvailable"))}</td>
       <td>${renderNamedList(row.investors)}</td>
       <td>${renderNamedList(row.launchpads)}</td>
-      <td>${escapeHtml(row.start_date || t("notAvailable"))}</td>
-      <td>${escapeHtml(row.end_date || t("notAvailable"))}</td>
+      <td>${formatDate(row.start_date)}</td>
+      <td>${formatDate(row.end_date)}</td>
       <td>${formatMoney(row.raised_amount)}</td>
       <td>${formatPrice(row.token_price)}</td>
       <td>${formatPrice(row.current_price)}</td>
@@ -384,20 +384,33 @@ function dateValue(value) {
   return Number.isNaN(parsed) ? 0 : parsed;
 }
 
+function formatDate(value) {
+  if (!value) return `<span class="muted">${escapeHtml(t("notAvailable"))}</span>`;
+  const parsed = Date.parse(value);
+  if (Number.isNaN(parsed)) return escapeHtml(value);
+  return new Intl.DateTimeFormat(state.language === "ru" ? "ru-RU" : "en-US", {
+    month: "short",
+    day: "numeric",
+    year: "2-digit",
+  }).format(new Date(parsed));
+}
+
 function formatMoney(value) {
   const number = Number(value || 0);
   if (!number) return `<span class="muted">${escapeHtml(t("notAvailable"))}</span>`;
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(number);
+  return `$${formatCompactNumber(number)}`;
 }
 
 function formatPrice(value) {
   const number = Number(value || 0);
   if (!number) return `<span class="muted">${escapeHtml(t("notAvailable"))}</span>`;
-  return `$${number.toLocaleString("en-US", { maximumFractionDigits: 8 })}`;
+  if (number >= 1) {
+    return `$${trimDecimals(number, 2)}`;
+  }
+  if (number >= 0.01) {
+    return `$${trimDecimals(number, 4)}`;
+  }
+  return `$${trimDecimals(number, 6)}`;
 }
 
 function formatMultiple(value) {
@@ -413,6 +426,21 @@ function formatMultiple(value) {
 
 function formatNumber(value) {
   return Number(value || 0).toLocaleString("en-US");
+}
+
+function formatCompactNumber(value) {
+  const abs = Math.abs(value);
+  if (abs >= 1_000_000_000) return `${trimDecimals(value / 1_000_000_000, 1)}B`;
+  if (abs >= 1_000_000) return `${trimDecimals(value / 1_000_000, 1)}M`;
+  if (abs >= 1_000) return `${trimDecimals(value / 1_000, 1)}K`;
+  return trimDecimals(value, 0);
+}
+
+function trimDecimals(value, digits) {
+  return Number(value)
+    .toFixed(digits)
+    .replace(/\\.0+$/, "")
+    .replace(/(\\.\\d*?)0+$/, "$1");
 }
 
 function escapeHtml(value) {
