@@ -1,6 +1,76 @@
 const state = {
   rows: [],
   categories: [],
+  language: localStorage.getItem("icoDashboardLanguage") || "en",
+};
+
+const translations = {
+  en: {
+    title: "ICO Dashboard",
+    language: "Language",
+    total: "Total",
+    past: "Past",
+    upcoming: "Upcoming",
+    search: "Search",
+    searchPlaceholder: "Name or symbol",
+    status: "Status",
+    all: "All",
+    category: "Category",
+    allCategories: "All categories",
+    minRating: "Min rating",
+    any: "Any",
+    sort: "Sort",
+    sortRating: "Rating high to low",
+    sortRaised: "Raised high to low",
+    sortDate: "Date newest",
+    sortName: "Name A-Z",
+    rating: "Rating",
+    project: "Project",
+    start: "Start",
+    end: "End",
+    raised: "Raised",
+    tokenPrice: "Token price",
+    rows: "rows",
+    loaded: "Loaded from output JSON",
+    loading: "Loading data...",
+    failed: "Failed to load data",
+    showingFirst: "Showing first 1,000 rows after filters",
+    unknown: "Unknown",
+    notAvailable: "N/A",
+  },
+  ru: {
+    title: "ICO Дашборд",
+    language: "Язык",
+    total: "Всего",
+    past: "Прошедшие",
+    upcoming: "Предстоящие",
+    search: "Поиск",
+    searchPlaceholder: "Название или символ",
+    status: "Статус",
+    all: "Все",
+    category: "Категория",
+    allCategories: "Все категории",
+    minRating: "Мин. рейтинг",
+    any: "Любой",
+    sort: "Сортировка",
+    sortRating: "Рейтинг по убыванию",
+    sortRaised: "Сборы по убыванию",
+    sortDate: "Сначала новые даты",
+    sortName: "Название A-Z",
+    rating: "Рейтинг",
+    project: "Проект",
+    start: "Старт",
+    end: "Конец",
+    raised: "Собрано",
+    tokenPrice: "Цена токена",
+    rows: "строк",
+    loaded: "Загружено из output JSON",
+    loading: "Загрузка данных...",
+    failed: "Не удалось загрузить данные",
+    showingFirst: "Показаны первые 1 000 строк после фильтров",
+    unknown: "Неизвестно",
+    notAvailable: "Нет данных",
+  },
 };
 
 const els = {
@@ -15,7 +85,12 @@ const els = {
   categoryFilter: document.querySelector("#categoryFilter"),
   ratingFilter: document.querySelector("#ratingFilter"),
   sortSelect: document.querySelector("#sortSelect"),
+  languageSelect: document.querySelector("#languageSelect"),
 };
+
+function t(key) {
+  return translations[state.language][key] || translations.en[key] || key;
+}
 
 async function loadData() {
   try {
@@ -34,10 +109,11 @@ async function loadData() {
 
     hydrateCategories();
     updateSummary();
+    applyTranslations();
     render();
-    els.loadState.textContent = "Loaded from output JSON";
+    els.loadState.textContent = t("loaded");
   } catch (error) {
-    els.loadState.textContent = `Failed to load data: ${error.message}`;
+    els.loadState.textContent = `${t("failed")}: ${error.message}`;
   }
 }
 
@@ -60,6 +136,9 @@ function calculateRating(row) {
 }
 
 function hydrateCategories() {
+  els.categoryFilter
+    .querySelectorAll("option:not([value='all'])")
+    .forEach((option) => option.remove());
   const options = state.categories
     .map((category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`)
     .join("");
@@ -91,13 +170,13 @@ function render() {
   });
 
   rows = sortRows(rows, els.sortSelect.value);
-  els.visibleCount.textContent = `${formatNumber(rows.length)} rows`;
+  els.visibleCount.textContent = `${formatNumber(rows.length)} ${t("rows")}`;
   els.tableBody.innerHTML = rows.slice(0, 1000).map(renderRow).join("");
 
   if (rows.length > 1000) {
-    els.loadState.textContent = "Showing first 1,000 rows after filters";
+    els.loadState.textContent = t("showingFirst");
   } else if (state.rows.length) {
-    els.loadState.textContent = "Loaded from output JSON";
+    els.loadState.textContent = t("loaded");
   }
 }
 
@@ -123,14 +202,14 @@ function renderRow(row) {
       <td><span class="rating ${ratingClass}">${row.rating}</span></td>
       <td>
         <div class="project">
-          <strong>${escapeHtml(row.name || "Unknown")}</strong>
-          <span>${escapeHtml(row.symbol || "N/A")}</span>
+          <strong>${escapeHtml(row.name || t("unknown"))}</strong>
+          <span>${escapeHtml(row.symbol || t("notAvailable"))}</span>
         </div>
       </td>
-      <td><span class="pill ${escapeHtml(row.status || "")}">${escapeHtml(row.status || "N/A")}</span></td>
-      <td>${escapeHtml(row.category || "N/A")}</td>
-      <td>${escapeHtml(row.start_date || "N/A")}</td>
-      <td>${escapeHtml(row.end_date || "N/A")}</td>
+      <td><span class="pill ${escapeHtml(row.status || "")}">${escapeHtml(translateStatus(row.status))}</span></td>
+      <td>${escapeHtml(row.category || t("notAvailable"))}</td>
+      <td>${escapeHtml(row.start_date || t("notAvailable"))}</td>
+      <td>${escapeHtml(row.end_date || t("notAvailable"))}</td>
       <td>${formatMoney(row.raised_amount)}</td>
       <td>${formatPrice(row.token_price)}</td>
     </tr>
@@ -145,7 +224,7 @@ function dateValue(value) {
 
 function formatMoney(value) {
   const number = Number(value || 0);
-  if (!number) return '<span class="muted">N/A</span>';
+  if (!number) return `<span class="muted">${escapeHtml(t("notAvailable"))}</span>`;
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -155,7 +234,7 @@ function formatMoney(value) {
 
 function formatPrice(value) {
   const number = Number(value || 0);
-  if (!number) return '<span class="muted">N/A</span>';
+  if (!number) return `<span class="muted">${escapeHtml(t("notAvailable"))}</span>`;
   return `$${number.toLocaleString("en-US", { maximumFractionDigits: 8 })}`;
 }
 
@@ -172,6 +251,26 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+function translateStatus(status) {
+  if (status === "past") return t("past");
+  if (status === "upcoming") return t("upcoming");
+  return t("notAvailable");
+}
+
+function applyTranslations() {
+  document.documentElement.lang = state.language;
+  els.languageSelect.value = state.language;
+  document.querySelectorAll("[data-i18n]").forEach((element) => {
+    element.textContent = t(element.dataset.i18n);
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
+    element.placeholder = t(element.dataset.i18nPlaceholder);
+  });
+  if (!state.rows.length) {
+    els.loadState.textContent = t("loading");
+  }
+}
+
 [
   els.searchInput,
   els.statusFilter,
@@ -180,4 +279,13 @@ function escapeHtml(value) {
   els.sortSelect,
 ].forEach((element) => element.addEventListener("input", render));
 
+els.languageSelect.addEventListener("change", () => {
+  state.language = els.languageSelect.value;
+  localStorage.setItem("icoDashboardLanguage", state.language);
+  applyTranslations();
+  updateSummary();
+  render();
+});
+
+applyTranslations();
 loadData();

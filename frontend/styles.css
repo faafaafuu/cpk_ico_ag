@@ -61,6 +61,16 @@ h1 {
   gap: 10px;
 }
 
+.topActions {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+}
+
+.languageControl {
+  min-width: 138px;
+}
+
 .summary > div {
   border: 1px solid var(--line);
   background: var(--panel);
@@ -238,8 +248,14 @@ tbody tr:hover {
   }
 
   .summary,
+  .topActions,
   .controls {
     grid-template-columns: 1fr;
+  }
+
+  .topActions {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .tableWrap {
