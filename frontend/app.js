@@ -1,6 +1,12 @@
 const state = {
   rows: [],
   categories: [],
+  historicalPatterns: {
+    categories10x: new Map(),
+    investors10x: new Map(),
+    launchpads10x: new Map(),
+    medianRaise10x: 0,
+  },
   language: localStorage.getItem("icoDashboardLanguage") || "en",
   sortColumn: "rating",
   sortDirection: "desc",
@@ -39,6 +45,11 @@ const translations = {
     athRoi: "ATH ROI",
     investors: "Investors",
     launchpads: "Launchpads",
+    ath10x: "ATH 10x+",
+    ath50x: "ATH 50x+",
+    ath100x: "ATH 100x+",
+    top10xCategories: "Top 10x+ categories",
+    top10xBackers: "Top 10x+ backers",
     rows: "rows",
     loaded: "Loaded from output JSON",
     loading: "Loading data...",
@@ -79,6 +90,11 @@ const translations = {
     athRoi: "ATH ROI",
     investors: "Инвесторы",
     launchpads: "Лаунчпады",
+    ath10x: "ATH 10x+",
+    ath50x: "ATH 50x+",
+    ath100x: "ATH 100x+",
+    top10xCategories: "Топ категорий 10x+",
+    top10xBackers: "Топ инвесторов 10x+",
     rows: "строк",
     loaded: "Загружено из output JSON",
     loading: "Загрузка данных...",
@@ -102,6 +118,11 @@ const els = {
   ratingFilter: document.querySelector("#ratingFilter"),
   sortSelect: document.querySelector("#sortSelect"),
   languageSelect: document.querySelector("#languageSelect"),
+  ath10xCount: document.querySelector("#ath10xCount"),
+  ath50xCount: document.querySelector("#ath50xCount"),
+  ath100xCount: document.querySelector("#ath100xCount"),
+  topCategories: document.querySelector("#topCategories"),
+  topBackers: document.querySelector("#topBackers"),
 };
 
 function t(key) {
@@ -115,6 +136,8 @@ async function loadData() {
       fetch("/output/upcoming_icos.json").then((response) => response.json()),
     ]);
 
+    buildHistoricalPatterns(past);
+
     state.rows = [...past, ...upcoming].map((row) => ({
       ...row,
       rating: calculateRating(row),
@@ -125,6 +148,7 @@ async function loadData() {
 
     hydrateCategories();
     updateSummary();
+    updateInsights(past);
     applyTranslations();
     render();
     els.loadState.textContent = t("loaded");
@@ -146,12 +170,89 @@ function calculateRating(row) {
   if (Number(row.roi || 0) > 1) score += 8;
   if (Number(row.ath_roi || 0) > 5) score += 8;
   if (Array.isArray(row.investors) && row.investors.length) score += 10;
+  score += historicalPatternBonus(row);
   if (raised >= 10_000_000) score += 28;
   else if (raised >= 2_000_000) score += 22;
   else if (raised >= 500_000) score += 16;
   else if (raised > 0) score += 10;
 
   return Math.min(100, score);
+}
+
+function buildHistoricalPatterns(pastRows) {
+  const winners = pastRows.filter((row) => Number(row.ath_roi || 0) >= 10);
+  state.historicalPatterns.categories10x = countBy(winners, (row) => row.category);
+  state.historicalPatterns.investors10x = countByNested(winners, "investors");
+  state.historicalPatterns.launchpads10x = countByNested(winners, "launchpads");
+  state.historicalPatterns.medianRaise10x = median(
+    winners.map((row) => Number(row.raised_amount || 0)).filter(Boolean)
+  );
+}
+
+function historicalPatternBonus(row) {
+  let bonus = 0;
+  const patterns = state.historicalPatterns;
+  const categoryRank = rankInMap(patterns.categories10x, row.category);
+  if (categoryRank > 0 && categoryRank <= 8) bonus += 6;
+
+  const investorHit = (row.investors || []).some((item) => rankInMap(patterns.investors10x, item.name) <= 12);
+  const launchpadHit = (row.launchpads || []).some((item) => rankInMap(patterns.launchpads10x, item.name) <= 10);
+  if (investorHit) bonus += 8;
+  if (launchpadHit) bonus += 5;
+
+  const raised = Number(row.raised_amount || 0);
+  const medianRaise = patterns.medianRaise10x;
+  if (raised && medianRaise && raised <= medianRaise * 4) bonus += 4;
+  return bonus;
+}
+
+function updateInsights(pastRows) {
+  const withAth = pastRows.filter((row) => Number(row.ath_roi || 0) > 0);
+  els.ath10xCount.textContent = formatNumber(withAth.filter((row) => Number(row.ath_roi) >= 10).length);
+  els.ath50xCount.textContent = formatNumber(withAth.filter((row) => Number(row.ath_roi) >= 50).length);
+  els.ath100xCount.textContent = formatNumber(withAth.filter((row) => Number(row.ath_roi) >= 100).length);
+  els.topCategories.textContent = topLabels(state.historicalPatterns.categories10x, 4);
+  els.topBackers.textContent = topLabels(state.historicalPatterns.investors10x, 4);
+}
+
+function countBy(rows, getter) {
+  const counts = new Map();
+  rows.forEach((row) => {
+    const value = getter(row);
+    if (value) counts.set(value, (counts.get(value) || 0) + 1);
+  });
+  return counts;
+}
+
+function countByNested(rows, key) {
+  const counts = new Map();
+  rows.forEach((row) => {
+    (row[key] || []).forEach((item) => {
+      if (item.name) counts.set(item.name, (counts.get(item.name) || 0) + 1);
+    });
+  });
+  return counts;
+}
+
+function topLabels(map, limit) {
+  return [...map.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([name]) => name)
+    .join(", ");
+}
+
+function rankInMap(map, value) {
+  if (!value || !map.has(value)) return Infinity;
+  const sorted = [...map.entries()].sort((a, b) => b[1] - a[1]);
+  return sorted.findIndex(([name]) => name === value) + 1;
+}
+
+function median(values) {
+  if (!values.length) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 }
 
 function hydrateCategories() {
