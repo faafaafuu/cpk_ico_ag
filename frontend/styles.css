@@ -128,6 +128,98 @@ h1 {
   white-space: nowrap;
 }
 
+.picksPanel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  margin-bottom: 16px;
+  padding: 14px;
+}
+
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: start;
+  margin-bottom: 12px;
+}
+
+.panelEyebrow,
+.disclaimer {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.panelHeader h2 {
+  margin: 3px 0 0;
+  font-size: 20px;
+}
+
+.picksGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.pickCard {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #0c1018;
+  padding: 12px;
+}
+
+.pickTop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.pickTop a {
+  color: var(--text);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.pickTop a:hover {
+  color: var(--accent);
+}
+
+.pickMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.miniBadge {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+.allocation {
+  color: var(--accent);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.reasonList {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.reasonList li {
+  margin: 4px 0;
+}
+
 label {
   display: grid;
   gap: 7px;
@@ -408,6 +500,7 @@ tbody tr:hover {
   .summary,
   .topActions,
   .insights,
+  .picksGrid,
   .controls {
     grid-template-columns: 1fr;
   }

@@ -50,6 +50,12 @@ const translations = {
     ath100x: "ATH 100x+",
     top10xCategories: "Top 10x+ categories",
     top10xBackers: "Top 10x+ backers",
+    topPicksEyebrow: "Analytical shortlist",
+    topPicksTitle: "Top projects to research",
+    notFinancialAdvice: "Not financial advice",
+    allocation: "Deposit",
+    why: "Why",
+    noPicks: "No qualifying upcoming projects",
     rows: "rows",
     loaded: "Loaded from output JSON",
     loading: "Loading data...",
@@ -95,6 +101,12 @@ const translations = {
     ath100x: "ATH 100x+",
     top10xCategories: "Топ категорий 10x+",
     top10xBackers: "Топ инвесторов 10x+",
+    topPicksEyebrow: "Аналитический шортлист",
+    topPicksTitle: "Топ проектов для ресерча",
+    notFinancialAdvice: "Не финансовый совет",
+    allocation: "Депозит",
+    why: "Почему",
+    noPicks: "Нет подходящих upcoming-проектов",
     rows: "строк",
     loaded: "Загружено из output JSON",
     loading: "Загрузка данных...",
@@ -123,6 +135,7 @@ const els = {
   ath100xCount: document.querySelector("#ath100xCount"),
   topCategories: document.querySelector("#topCategories"),
   topBackers: document.querySelector("#topBackers"),
+  topPicks: document.querySelector("#topPicks"),
 };
 
 function t(key) {
@@ -149,12 +162,83 @@ async function loadData() {
     hydrateCategories();
     updateSummary();
     updateInsights(past);
+    renderTopPicks();
     applyTranslations();
     render();
     els.loadState.textContent = t("loaded");
   } catch (error) {
     els.loadState.textContent = `${t("failed")}: ${error.message}`;
   }
+}
+
+function renderTopPicks() {
+  const picks = state.rows
+    .filter((row) => row.status === "upcoming")
+    .map((row) => ({ ...row, pickReasons: pickReasons(row), allocation: allocationFor(row) }))
+    .filter((row) => row.rating >= 45 && row.pickReasons.length >= 2 && row.allocation > 0)
+    .sort((a, b) => b.rating - a.rating || b.allocation - a.allocation)
+    .slice(0, 6);
+
+  if (!picks.length) {
+    els.topPicks.innerHTML = `<div class="pickCard"><span class="muted">${escapeHtml(t("noPicks"))}</span></div>`;
+    return;
+  }
+
+  els.topPicks.innerHTML = picks.map(renderPick).join("");
+}
+
+function renderPick(row) {
+  return `
+    <article class="pickCard">
+      <div class="pickTop">
+        ${renderLogo(row)}
+        <div class="projectText">
+          <a href="${escapeHtml(row.cryptorank_url || "#")}" target="_blank" rel="noopener noreferrer">
+            ${escapeHtml(row.name || t("unknown"))}
+          </a>
+          <span>${escapeHtml(row.symbol || t("notAvailable"))}</span>
+        </div>
+      </div>
+      <div class="pickMeta">
+        <span class="miniBadge">${escapeHtml(row.category || t("notAvailable"))}</span>
+        <span class="miniBadge">${formatMoney(row.raised_amount)}</span>
+        <span class="miniBadge">${escapeHtml(t("rating"))}: ${row.rating}</span>
+      </div>
+      <div class="allocation">${escapeHtml(t("allocation"))}: ${row.allocation}%</div>
+      <ul class="reasonList">
+        ${row.pickReasons.slice(0, 4).map((reason) => `<li>${escapeHtml(reason)}</li>`).join("")}
+      </ul>
+    </article>
+  `;
+}
+
+function pickReasons(row) {
+  const reasons = [];
+  const patterns = state.historicalPatterns;
+  if (rankInMap(patterns.categories10x, row.category) <= 8) {
+    reasons.push(state.language === "ru" ? "Категория часто встречалась у 10x+ past" : "Category appears often in 10x+ past projects");
+  }
+  if ((row.investors || []).some((item) => rankInMap(patterns.investors10x, item.name) <= 12)) {
+    reasons.push(state.language === "ru" ? "Есть инвесторы из исторического 10x+ кластера" : "Has backers from historical 10x+ cluster");
+  }
+  if ((row.launchpads || []).some((item) => rankInMap(patterns.launchpads10x, item.name) <= 10)) {
+    reasons.push(state.language === "ru" ? "Launchpad совпадает с успешными past-кейсами" : "Launchpad overlaps with successful past cases");
+  }
+  if (Number(row.raised_amount || 0) > 0 && Number(row.raised_amount || 0) <= 5_000_000) {
+    reasons.push(state.language === "ru" ? "Raise не выглядит чрезмерно раздутым" : "Raise is not aggressively inflated");
+  }
+  if (row.token_price) {
+    reasons.push(state.language === "ru" ? "Есть цена токена для оценки входа" : "Token price is available for entry analysis");
+  }
+  return reasons;
+}
+
+function allocationFor(row) {
+  if (row.rating >= 70) return 1;
+  if (row.rating >= 60) return 0.75;
+  if (row.rating >= 50) return 0.5;
+  if (row.rating >= 45) return 0.25;
+  return 0;
 }
 
 function calculateRating(row) {
@@ -546,6 +630,7 @@ els.languageSelect.addEventListener("change", () => {
   localStorage.setItem("icoDashboardLanguage", state.language);
   applyTranslations();
   updateSummary();
+  renderTopPicks();
   render();
 });
 
