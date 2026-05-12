@@ -439,8 +439,8 @@ function formatCompactNumber(value) {
 function trimDecimals(value, digits) {
   return Number(value)
     .toFixed(digits)
-    .replace(/\\.0+$/, "")
-    .replace(/(\\.\\d*?)0+$/, "$1");
+    .replace(/\.0+$/, "")
+    .replace(/(\.\d*?)0+$/, "$1");
 }
 
 function escapeHtml(value) {
