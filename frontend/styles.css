@@ -142,22 +142,25 @@ select:focus {
 }
 
 .tableWrap {
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   max-height: calc(100vh - 260px);
 }
 
 table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
-  min-width: 1380px;
 }
 
 th,
 td {
-  padding: 13px 14px;
+  padding: 11px 10px;
   border-bottom: 1px solid var(--line);
   text-align: left;
-  white-space: nowrap;
+  white-space: normal;
+  vertical-align: middle;
+  overflow-wrap: anywhere;
 }
 
 th {
@@ -168,6 +171,53 @@ th {
   color: var(--muted);
   font-size: 12px;
   text-transform: uppercase;
+}
+
+th:nth-child(1),
+td:nth-child(1) {
+  width: 58px;
+}
+
+th:nth-child(2),
+td:nth-child(2) {
+  width: 15%;
+}
+
+th:nth-child(3),
+td:nth-child(3) {
+  width: 92px;
+}
+
+th:nth-child(4),
+td:nth-child(4) {
+  width: 9%;
+}
+
+th:nth-child(5),
+td:nth-child(5),
+th:nth-child(6),
+td:nth-child(6) {
+  width: 11%;
+}
+
+th:nth-child(7),
+td:nth-child(7),
+th:nth-child(8),
+td:nth-child(8) {
+  width: 86px;
+}
+
+th:nth-child(9),
+td:nth-child(9),
+th:nth-child(10),
+td:nth-child(10),
+th:nth-child(11),
+td:nth-child(11),
+th:nth-child(12),
+td:nth-child(12),
+th:nth-child(13),
+td:nth-child(13) {
+  width: 8%;
 }
 
 .sortHeader {
@@ -183,6 +233,7 @@ th {
   padding: 0;
   text-align: left;
   text-transform: inherit;
+  white-space: normal;
 }
 
 .sortHeader::after {
@@ -214,9 +265,9 @@ tbody tr:hover {
 }
 
 .projectLogo {
-  width: 34px;
-  height: 34px;
-  flex: 0 0 34px;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
   border-radius: 50%;
   background: #222b3a;
   object-fit: cover;
@@ -246,9 +297,10 @@ tbody tr:hover {
 
 .compactList {
   display: block;
-  max-width: 220px;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pill {
