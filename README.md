@@ -99,6 +99,45 @@ Open:
 http://localhost:8787/frontend/
 ```
 
+## Docker
+
+Build and run the always-on dashboard with daily morning updates:
+
+```bash
+docker compose up -d --build
+```
+
+The service:
+
+- serves the UI at `http://localhost:8787/frontend/`;
+- writes generated files to the host `./output` directory;
+- refreshes data on container start by default;
+- refreshes data every day at `UPDATE_TIME` in the configured `TZ`;
+- restarts automatically through `restart: unless-stopped`.
+
+Runtime settings are read from `.env`. Useful Docker runner variables:
+
+```dotenv
+TZ=Europe/Berlin
+HTTP_PORT=8787
+UPDATE_TIME=06:00
+UPDATE_STATUS=all
+UPDATE_SOURCE=scrape
+RUN_ON_START=true
+```
+
+Check logs:
+
+```bash
+docker compose logs -f
+```
+
+Stop:
+
+```bash
+docker compose down
+```
+
 ## Output Example
 
 ```json

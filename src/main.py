@@ -76,16 +76,19 @@ def build_parser() -> argparse.ArgumentParser:
 def write_json(path: Path, items: Iterable[ICOItem]) -> None:
     """Write ICO items to UTF-8 JSON."""
     payload = [item.dict() for item in items]
-    with path.open("w", encoding="utf-8") as file_obj:
+    temp_path = path.with_name(f".{path.name}.tmp")
+    with temp_path.open("w", encoding="utf-8") as file_obj:
         json.dump(payload, file_obj, ensure_ascii=False, indent=2)
         file_obj.write("\n")
+    temp_path.replace(path)
 
 
 def write_csv(path: Path, items: Iterable[ICOItem]) -> None:
     """Write ICO items to UTF-8 CSV."""
     rows = [item.dict() for item in items]
     fieldnames = list(ICOItem.__fields__.keys())
-    with path.open("w", encoding="utf-8", newline="") as file_obj:
+    temp_path = path.with_name(f".{path.name}.tmp")
+    with temp_path.open("w", encoding="utf-8", newline="") as file_obj:
         writer = csv.DictWriter(file_obj, fieldnames=fieldnames)
         writer.writeheader()
         for row in rows:
@@ -93,6 +96,7 @@ def write_csv(path: Path, items: Iterable[ICOItem]) -> None:
                 if isinstance(value, (dict, list)):
                     row[key] = json.dumps(value, ensure_ascii=False)
             writer.writerow(row)
+    temp_path.replace(path)
 
 
 def save_items(

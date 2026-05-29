@@ -38,6 +38,11 @@
         </div>
       </header>
 
+      <nav class="modeSwitch" aria-label="Dashboard mode">
+        <button class="modeButton active" type="button" data-mode="ico" data-i18n="icoMode">ICO</button>
+        <button class="modeButton" type="button" data-mode="drop" data-i18n="dropMode">Drop Hunting</button>
+      </nav>
+
       <section class="controls" aria-label="Table filters">
         <label>
           <span data-i18n="search">Search</span>
@@ -83,7 +88,7 @@
         </label>
       </section>
 
-      <section class="benchmarkPanel" aria-label="Historical benchmark">
+      <section class="benchmarkPanel dashboardView active" data-view="ico" aria-label="Historical benchmark">
         <div class="panelHeader">
           <div>
             <span class="panelEyebrow" data-i18n="benchmarkEyebrow">Past-project benchmark</span>
@@ -134,7 +139,7 @@
         </div>
       </section>
 
-      <section class="picksPanel" aria-label="Top picks">
+      <section class="picksPanel dashboardView active" data-view="ico" aria-label="Top picks">
         <div class="panelHeader">
           <div>
             <span class="panelEyebrow" data-i18n="topPicksEyebrow">Analytical shortlist</span>
@@ -145,7 +150,64 @@
         <div id="topPicks" class="picksGrid"></div>
       </section>
 
-      <section class="tableShell">
+      <section class="benchmarkPanel dashboardView" data-view="drop" aria-label="Drop hunting benchmark">
+        <div class="panelHeader">
+          <div>
+            <span class="panelEyebrow" data-i18n="dropBenchmarkEyebrow">Drop-hunting framework</span>
+            <h2 data-i18n="dropBenchmarkTitle">What to farm before TGE</h2>
+          </div>
+          <span class="disclaimer" id="dropSample">-</span>
+        </div>
+        <div class="benchmarkGrid dropMetrics">
+          <div class="metricCard">
+            <span data-i18n="highSignalDrops">High signal</span>
+            <strong id="highSignalDrops">0</strong>
+            <small data-i18n="score80Plus">Score 80+</small>
+          </div>
+          <div class="metricCard">
+            <span data-i18n="backedDrops">Backed projects</span>
+            <strong id="backedDrops">0</strong>
+            <small data-i18n="hasInvestors">Has investors</small>
+          </div>
+          <div class="metricCard">
+            <span data-i18n="lowCostDrops">Low cost</span>
+            <strong id="lowCostDrops">0</strong>
+            <small data-i18n="starterFriendly">Starter-friendly</small>
+          </div>
+          <div class="metricCard">
+            <span data-i18n="testnetDrops">Testnet focus</span>
+            <strong id="testnetDrops">0</strong>
+            <small data-i18n="dailyWeekly">Daily / weekly tasks</small>
+          </div>
+        </div>
+        <div class="patternRows">
+          <div>
+            <span data-i18n="dropCategories">Priority categories</span>
+            <div id="dropCategories" class="chipRow"></div>
+          </div>
+          <div>
+            <span data-i18n="dropActions">Core actions</span>
+            <div id="dropActions" class="chipRow"></div>
+          </div>
+          <div>
+            <span data-i18n="dropRules">Risk rules</span>
+            <div id="dropRules" class="chipRow"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="picksPanel dashboardView" data-view="drop" aria-label="Drop hunting picks">
+        <div class="panelHeader">
+          <div>
+            <span class="panelEyebrow" data-i18n="dropPicksEyebrow">Drop-hunting shortlist</span>
+            <h2 data-i18n="dropPicksTitle">Best candidates to farm</h2>
+          </div>
+          <span class="disclaimer" data-i18n="notFinancialAdvice">Not financial advice</span>
+        </div>
+        <div id="dropPicks" class="picksGrid"></div>
+      </section>
+
+      <section class="tableShell dashboardView active" data-view="ico">
         <div class="tableMeta">
           <strong id="visibleCount">0 rows</strong>
           <span id="loadState">Loading data...</span>
@@ -170,6 +232,30 @@
               </tr>
             </thead>
             <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="tableShell dashboardView" data-view="drop">
+        <div class="tableMeta">
+          <strong id="dropVisibleCount">0 rows</strong>
+          <span id="dropLoadState">Loading data...</span>
+        </div>
+        <div class="tableWrap">
+          <table class="dropTable">
+            <thead>
+              <tr>
+                <th><button class="dropSortHeader" data-drop-sort-column="dropScore" data-i18n="dropScore">Score</button></th>
+                <th><button class="dropSortHeader" data-drop-sort-column="name" data-i18n="project">Project</button></th>
+                <th><button class="dropSortHeader" data-drop-sort-column="category" data-i18n="category">Category</button></th>
+                <th><button class="dropSortHeader" data-drop-sort-column="effort" data-i18n="effort">Effort</button></th>
+                <th><button class="dropSortHeader" data-drop-sort-column="cost" data-i18n="cost">Cost</button></th>
+                <th data-i18n="taskPlan">Task plan</th>
+                <th><button class="dropSortHeader" data-drop-sort-column="investors" data-i18n="investors">Investors</button></th>
+                <th><button class="dropSortHeader" data-drop-sort-column="start_date" data-i18n="start">Start</button></th>
+              </tr>
+            </thead>
+            <tbody id="dropTableBody"></tbody>
           </table>
         </div>
       </section>
