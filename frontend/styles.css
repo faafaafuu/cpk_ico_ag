@@ -1,15 +1,20 @@
 :root {
   color-scheme: dark;
-  --bg: #090b10;
-  --panel: #10141d;
-  --panel-2: #151b26;
-  --line: #242c3a;
-  --text: #edf2f7;
-  --muted: #8f9aad;
-  --accent: #4cc9a7;
-  --accent-2: #74a7ff;
-  --warn: #f1c75b;
-  --danger: #ff6b6b;
+  --bg: #050806;
+  --panel: #0a120e;
+  --panel-2: #0e1a14;
+  --panel-3: #07100c;
+  --line: #183126;
+  --line-strong: #23543d;
+  --text: #e9f7ef;
+  --muted: #87a294;
+  --accent: #34d27c;
+  --accent-soft: rgba(52, 210, 124, 0.12);
+  --accent-2: #80d8a8;
+  --warn: #d7c268;
+  --danger: #ef6b6b;
+  --shadow: rgba(0, 0, 0, 0.34);
+  --mono: "SFMono-Regular", "Cascadia Mono", "Liberation Mono", Consolas, monospace;
 }
 
 * {
@@ -19,11 +24,17 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--bg);
+  background:
+    linear-gradient(180deg, rgba(26, 70, 45, 0.16), transparent 260px),
+    repeating-linear-gradient(0deg, rgba(52, 210, 124, 0.025), rgba(52, 210, 124, 0.025) 1px, transparent 1px, transparent 26px),
+    var(--bg);
   color: var(--text);
   font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+    "DejaVu Sans", "Noto Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-synthesis: none;
+  line-height: 1.45;
+  text-rendering: optimizeLegibility;
 }
 
 .app {
@@ -52,6 +63,7 @@ body {
 h1 {
   margin: 0;
   font-size: clamp(30px, 4vw, 48px);
+  font-weight: 850;
   line-height: 1;
 }
 
@@ -75,6 +87,7 @@ h1 {
   border: 1px solid var(--line);
   background: var(--panel);
   border-radius: 8px;
+  box-shadow: 0 14px 34px var(--shadow);
   padding: 12px 14px;
 }
 
@@ -82,10 +95,51 @@ h1 {
   display: block;
   font-size: 24px;
   font-weight: 800;
+  font-family: var(--mono);
 }
 
 .summary small {
   color: var(--muted);
+}
+
+.modeSwitch {
+  display: inline-flex;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(10, 18, 14, 0.9);
+  margin-bottom: 16px;
+  padding: 4px;
+}
+
+.modeButton {
+  min-height: 36px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 0 14px;
+}
+
+.modeButton:hover {
+  color: var(--text);
+}
+
+.modeButton.active {
+  background: var(--accent);
+  color: #031009;
+}
+
+.dashboardView {
+  display: none;
+}
+
+.dashboardView.active {
+  display: block;
 }
 
 .controls {
@@ -99,7 +153,8 @@ h1 {
 .picksPanel {
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: var(--panel);
+  background: linear-gradient(180deg, rgba(18, 40, 29, 0.92), rgba(8, 17, 12, 0.96));
+  box-shadow: 0 14px 34px var(--shadow);
   margin-bottom: 16px;
   padding: 14px;
 }
@@ -111,11 +166,15 @@ h1 {
   margin-bottom: 14px;
 }
 
+.dropMetrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .metricCard {
   min-width: 0;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #0c1018;
+  background: var(--panel-3);
   padding: 12px;
 }
 
@@ -133,6 +192,7 @@ h1 {
   margin-top: 6px;
   color: var(--text);
   font-size: 22px;
+  font-family: var(--mono);
 }
 
 .metricCard small {
@@ -171,7 +231,7 @@ h1 {
 }
 
 .patternChip.clickable:hover {
-  border-color: var(--accent);
+  border-color: var(--line-strong);
   color: var(--accent);
 }
 
@@ -206,20 +266,20 @@ h1 {
   min-width: 0;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #0c1018;
+  background: var(--panel-3);
   padding: 12px;
 }
 
 .pickCard.observe {
-  border-color: rgba(241, 199, 91, 0.45);
+  border-color: rgba(215, 194, 104, 0.5);
 }
 
 .pickCard.participate {
-  border-color: rgba(76, 201, 167, 0.55);
+  border-color: rgba(52, 210, 124, 0.58);
 }
 
 .pickCard.skip {
-  border-color: rgba(255, 107, 107, 0.5);
+  border-color: rgba(239, 107, 107, 0.5);
 }
 
 .pickTop {
@@ -273,13 +333,13 @@ h1 {
   color: var(--accent);
   font-size: 18px;
   font-weight: 900;
-  letter-spacing: 1px;
+  letter-spacing: 0;
 }
 
 .termsBlock {
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: var(--panel);
+  background: rgba(8, 18, 13, 0.86);
   margin: 10px 0;
   padding: 10px;
 }
@@ -348,7 +408,7 @@ select {
   min-height: 42px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: var(--panel);
+  background: var(--panel-3);
   color: var(--text);
   padding: 0 12px;
   outline: none;
@@ -357,6 +417,7 @@ select {
 input:focus,
 select:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .tableShell {
@@ -364,6 +425,7 @@ select:focus {
   border-radius: 8px;
   overflow: hidden;
   background: var(--panel);
+  box-shadow: 0 14px 34px var(--shadow);
 }
 
 .tableMeta {
@@ -406,7 +468,7 @@ th {
   position: sticky;
   top: 0;
   z-index: 1;
-  background: #0c1018;
+  background: #07100c;
   color: var(--muted);
   font-size: 12px;
   text-transform: uppercase;
@@ -459,6 +521,43 @@ td:nth-child(13) {
   width: 7.5%;
 }
 
+.dropTable th:nth-child(1),
+.dropTable td:nth-child(1) {
+  width: 72px;
+}
+
+.dropTable th:nth-child(2),
+.dropTable td:nth-child(2) {
+  width: 20%;
+}
+
+.dropTable th:nth-child(3),
+.dropTable td:nth-child(3) {
+  width: 13%;
+}
+
+.dropTable th:nth-child(4),
+.dropTable td:nth-child(4),
+.dropTable th:nth-child(5),
+.dropTable td:nth-child(5) {
+  width: 94px;
+}
+
+.dropTable th:nth-child(6),
+.dropTable td:nth-child(6) {
+  width: 24%;
+}
+
+.dropTable th:nth-child(7),
+.dropTable td:nth-child(7) {
+  width: 18%;
+}
+
+.dropTable th:nth-child(8),
+.dropTable td:nth-child(8) {
+  width: 94px;
+}
+
 .sortHeader {
   display: inline-flex;
   align-items: center;
@@ -473,6 +572,40 @@ td:nth-child(13) {
   text-align: left;
   text-transform: inherit;
   white-space: normal;
+}
+
+.dropSortHeader {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+  padding: 0;
+  text-align: left;
+  text-transform: inherit;
+  white-space: normal;
+}
+
+.dropSortHeader::after {
+  content: "";
+  color: var(--accent);
+  font-size: 11px;
+}
+
+.dropSortHeader.active.asc::after {
+  content: "▲";
+}
+
+.dropSortHeader.active.desc::after {
+  content: "▼";
+}
+
+.dropSortHeader:hover {
+  color: var(--text);
 }
 
 .sortHeader::after {
@@ -494,7 +627,7 @@ td:nth-child(13) {
 }
 
 tbody tr:hover {
-  background: #171e2b;
+  background: rgba(52, 210, 124, 0.07);
 }
 
 .project {
@@ -508,7 +641,7 @@ tbody tr:hover {
   height: 30px;
   flex: 0 0 30px;
   border-radius: 50%;
-  background: #222b3a;
+  background: #10251a;
   object-fit: cover;
 }
 
@@ -556,12 +689,12 @@ tbody tr:hover {
 }
 
 .pill.upcoming {
-  color: #07110e;
+  color: #031009;
   background: var(--accent);
 }
 
 .pill.past {
-  color: #0b1220;
+  color: #06130d;
   background: var(--accent-2);
 }
 
@@ -572,12 +705,13 @@ tbody tr:hover {
   width: 44px;
   height: 32px;
   border-radius: 8px;
-  background: #202838;
+  background: #10251a;
+  font-family: var(--mono);
   font-weight: 900;
 }
 
 .rating.high {
-  color: #07110e;
+  color: #031009;
   background: var(--accent);
 }
 
@@ -614,6 +748,7 @@ tbody tr:hover {
   .summary,
   .topActions,
   .benchmarkGrid,
+  .dropMetrics,
   .patternRows,
   .picksGrid,
   .controls {

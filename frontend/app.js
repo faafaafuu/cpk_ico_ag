@@ -9,13 +9,18 @@ const state = {
     medianRaise10x: 0,
   },
   language: localStorage.getItem("icoDashboardLanguage") || "en",
+  mode: localStorage.getItem("icoDashboardMode") || "ico",
   sortColumn: "rating",
   sortDirection: "desc",
+  dropSortColumn: "dropScore",
+  dropSortDirection: "desc",
 };
 
 const translations = {
   en: {
     title: "ICO Dashboard",
+    icoMode: "ICO",
+    dropMode: "Drop Hunting",
     language: "Language",
     total: "Total",
     past: "Past",
@@ -71,8 +76,43 @@ const translations = {
     observe: "Observe",
     skip: "Skip",
     noPicks: "No qualifying upcoming projects",
+    dropBenchmarkEyebrow: "Drop-hunting framework",
+    dropBenchmarkTitle: "What to farm before TGE",
+    highSignalDrops: "High signal",
+    score80Plus: "Score 80+",
+    backedDrops: "Backed projects",
+    hasInvestors: "Has investors",
+    lowCostDrops: "Low cost",
+    starterFriendly: "Starter-friendly",
+    testnetDrops: "Testnet focus",
+    dailyWeekly: "Daily / weekly tasks",
+    dropCategories: "Priority categories",
+    dropActions: "Core actions",
+    dropRules: "Risk rules",
+    dropPicksEyebrow: "Drop-hunting shortlist",
+    dropPicksTitle: "Best candidates to farm",
+    dropScore: "Score",
+    effort: "Effort",
+    cost: "Cost",
+    taskPlan: "Task plan",
+    dropSignal: "Airdrop signal",
+    farmingPlan: "Farming plan",
+    noDropPicks: "No drop-hunting candidates match the filters",
+    candidatePool: "Candidate pool",
+    low: "Low",
+    medium: "Medium",
+    high: "High",
+    freeLow: "Free / low",
+    weekly: "Weekly",
+    daily: "Daily",
+    bridgeSwapStake: "Bridge, swap, stake",
+    questsSocial: "Quests + social",
+    testnetFeedback: "Testnet feedback",
+    noDeposits: "No blind deposits",
+    uniqueWallets: "Unique wallets only",
+    verifyLinks: "Verify links",
     rows: "rows",
-    loaded: "Loaded from output JSON",
+    loaded: "",
     loading: "Loading data...",
     failed: "Failed to load data",
     showingFirst: "Showing first 1,000 rows after filters",
@@ -80,7 +120,9 @@ const translations = {
     notAvailable: "N/A",
   },
   ru: {
-    title: "ICO Дашборд",
+    title: "ICO Dashboard",
+    icoMode: "ICO",
+    dropMode: "Drop Hunting",
     language: "Язык",
     total: "Всего",
     past: "Прошедшие",
@@ -91,7 +133,7 @@ const translations = {
     all: "Все",
     category: "Категория",
     allCategories: "Все категории",
-    minRating: "Мин. рейтинг",
+    minRating: "Min rating",
     any: "Любой",
     sort: "Сортировка",
     sortRating: "Рейтинг по убыванию",
@@ -100,7 +142,7 @@ const translations = {
     sortRaised: "Сборы по убыванию",
     sortDate: "Сначала новые даты",
     sortName: "Название A-Z",
-    rating: "Рейтинг",
+    rating: "Rating",
     project: "Проект",
     start: "Старт",
     end: "Конец",
@@ -111,21 +153,21 @@ const translations = {
     athRoi: "ATH ROI",
     investors: "Инвесторы",
     launchpads: "Лаунчпады",
-    benchmarkEyebrow: "Исторический benchmark",
+    benchmarkEyebrow: "Historical benchmark",
     benchmarkTitle: "Что чаще давало ATH-иксы",
     ath10x: "ATH 10x+",
     ath50x: "ATH 50x+",
     ath100x: "ATH 100x+",
     failedBucket: "ATH ниже 0.25x",
-    median10xRaise: "Медианный raise 10x+",
-    usedInRating: "Используется в бонусе рейтинга",
+    median10xRaise: "Median raise 10x+",
+    usedInRating: "Используется в rating bonus",
     top10xCategories: "Топ категорий 10x+",
     top10xBackers: "Топ инвесторов 10x+",
     top10xLaunchpads: "Топ launchpads 10x+",
     ofAthSample: "от ATH-выборки",
     athSample: "ATH-выборка",
-    topPicksEyebrow: "Аналитический шортлист",
-    topPicksTitle: "Шортлист глубокого ресерча",
+    topPicksEyebrow: "Research shortlist",
+    topPicksTitle: "Deep research shortlist",
     notFinancialAdvice: "Не финансовый совет",
     conviction: "Уверенность",
     saleTerms: "Sale / вестинг",
@@ -136,8 +178,43 @@ const translations = {
     observe: "Наблюдать",
     skip: "Скип",
     noPicks: "Нет подходящих upcoming-проектов",
+    dropBenchmarkEyebrow: "Drop Hunting framework",
+    dropBenchmarkTitle: "Что фармить до TGE",
+    highSignalDrops: "Сильный сигнал",
+    score80Plus: "Score 80+",
+    backedDrops: "Проекты с фондами",
+    hasInvestors: "Есть инвесторы",
+    lowCostDrops: "Низкая стоимость",
+    starterFriendly: "Подходит для старта",
+    testnetDrops: "Фокус на testnet",
+    dailyWeekly: "Daily / weekly задачи",
+    dropCategories: "Приоритетные категории",
+    dropActions: "Основные действия",
+    dropRules: "Риск-правила",
+    dropPicksEyebrow: "Drop Hunting shortlist",
+    dropPicksTitle: "Лучшие кандидаты для фарма",
+    dropScore: "Score",
+    effort: "Усилие",
+    cost: "Стоимость",
+    taskPlan: "План задач",
+    dropSignal: "Airdrop-сигнал",
+    farmingPlan: "План фарма",
+    noDropPicks: "Нет Drop Hunting кандидатов под текущие фильтры",
+    candidatePool: "Пул кандидатов",
+    low: "Низкое",
+    medium: "Среднее",
+    high: "Высокое",
+    freeLow: "Бесплатно / низко",
+    weekly: "Еженедельно",
+    daily: "Ежедневно",
+    bridgeSwapStake: "Bridge, swap, stake",
+    questsSocial: "Квесты + соцсети",
+    testnetFeedback: "Testnet feedback",
+    noDeposits: "Без слепых депозитов",
+    uniqueWallets: "Только уникальные кошельки",
+    verifyLinks: "Проверять ссылки",
     rows: "строк",
-    loaded: "Загружено из output JSON",
+    loaded: "",
     loading: "Загрузка данных...",
     failed: "Не удалось загрузить данные",
     showingFirst: "Показаны первые 1 000 строк после фильтров",
@@ -296,6 +373,8 @@ const els = {
   ratingFilter: document.querySelector("#ratingFilter"),
   sortSelect: document.querySelector("#sortSelect"),
   languageSelect: document.querySelector("#languageSelect"),
+  modeButtons: document.querySelectorAll(".modeButton"),
+  dashboardViews: document.querySelectorAll(".dashboardView"),
   ath10xCount: document.querySelector("#ath10xCount"),
   ath50xCount: document.querySelector("#ath50xCount"),
   ath100xCount: document.querySelector("#ath100xCount"),
@@ -310,17 +389,40 @@ const els = {
   topBackers: document.querySelector("#topBackers"),
   topLaunchpads: document.querySelector("#topLaunchpads"),
   topPicks: document.querySelector("#topPicks"),
+  dropSample: document.querySelector("#dropSample"),
+  highSignalDrops: document.querySelector("#highSignalDrops"),
+  backedDrops: document.querySelector("#backedDrops"),
+  lowCostDrops: document.querySelector("#lowCostDrops"),
+  testnetDrops: document.querySelector("#testnetDrops"),
+  dropCategories: document.querySelector("#dropCategories"),
+  dropActions: document.querySelector("#dropActions"),
+  dropRules: document.querySelector("#dropRules"),
+  dropPicks: document.querySelector("#dropPicks"),
+  dropVisibleCount: document.querySelector("#dropVisibleCount"),
+  dropLoadState: document.querySelector("#dropLoadState"),
+  dropTableBody: document.querySelector("#dropTableBody"),
 };
 
 function t(key) {
-  return translations[state.language][key] || translations.en[key] || key;
+  const dictionary = translations[state.language] || translations.en;
+  return dictionary[key] || translations.en[key] || key;
+}
+
+function resetFilters() {
+  els.searchInput.value = "";
+  els.statusFilter.value = "all";
+  els.categoryFilter.value = "all";
+  els.ratingFilter.value = "0";
+  els.sortSelect.value = "rating_desc";
+  state.sortColumn = "rating";
+  state.sortDirection = "desc";
 }
 
 async function loadData() {
   try {
     const [past, upcoming] = await Promise.all([
-      fetch("/output/past_icos.json").then((response) => response.json()),
-      fetch("/output/upcoming_icos.json").then((response) => response.json()),
+      fetchJson("/output/past_icos.json"),
+      fetchJson("/output/upcoming_icos.json"),
     ]);
 
     state.pastRows = past;
@@ -338,12 +440,24 @@ async function loadData() {
     updateSummary();
     updateInsights(past);
     renderTopPicks();
+    updateDropInsights();
     applyTranslations();
     render();
+    renderDrops();
     els.loadState.textContent = t("loaded");
+    els.dropLoadState.textContent = t("loaded");
   } catch (error) {
     els.loadState.textContent = `${t("failed")}: ${error.message}`;
+    els.dropLoadState.textContent = `${t("failed")}: ${error.message}`;
   }
+}
+
+async function fetchJson(url) {
+  const response = await fetch(url, { cache: "reload" });
+  if (!response.ok) {
+    throw new Error(`${response.status} ${response.statusText}`);
+  }
+  return response.json();
 }
 
 function renderTopPicks() {
@@ -359,6 +473,177 @@ function renderTopPicks() {
   }
 
   els.topPicks.innerHTML = picks.map(renderPick).join("");
+}
+
+function renderDropPicks(rows = getFilteredDropRows()) {
+  const picks = sortDropRows(rows)
+    .filter((row) => row.dropScore >= 60)
+    .slice(0, 6);
+
+  if (!picks.length) {
+    els.dropPicks.innerHTML = `<div class="pickCard"><span class="muted">${escapeHtml(t("noDropPicks"))}</span></div>`;
+    return;
+  }
+
+  els.dropPicks.innerHTML = picks.map(renderDropPick).join("");
+}
+
+function renderDropPick(row) {
+  return `
+    <article class="pickCard ${row.dropScore >= 80 ? "participate" : "observe"}">
+      <div class="pickTop">
+        ${renderLogo(row)}
+        <div class="projectText">
+          <a href="${escapeHtml(row.cryptorank_url || "#")}" target="_blank" rel="noopener noreferrer">
+            ${escapeHtml(row.name || t("unknown"))}
+          </a>
+          <span>${escapeHtml(row.symbol || t("notAvailable"))}</span>
+        </div>
+      </div>
+      <div class="pickMeta">
+        <span class="miniBadge">${escapeHtml(t("dropScore"))}: ${row.dropScore}</span>
+        <span class="miniBadge">${escapeHtml(row.category || t("notAvailable"))}</span>
+        <span class="miniBadge">${escapeHtml(row.effortLabel)}</span>
+        <span class="miniBadge">${escapeHtml(row.costLabel)}</span>
+      </div>
+      <div class="termsBlock">
+        <strong>${escapeHtml(t("dropSignal"))}</strong>
+        <p>${escapeHtml(row.dropSignal)}</p>
+      </div>
+      <strong class="reasonTitle">${escapeHtml(t("farmingPlan"))}</strong>
+      <ul class="reasonList">
+        ${row.tasks.map((task) => `<li>${escapeHtml(task)}</li>`).join("")}
+      </ul>
+    </article>
+  `;
+}
+
+function updateDropInsights() {
+  const rows = buildDropRows(state.rows);
+  const highSignal = rows.filter((row) => row.dropScore >= 80).length;
+  const backed = rows.filter((row) => countItems(row.investors) > 0).length;
+  const lowCost = rows.filter((row) => row.cost === 1).length;
+  const testnet = rows.filter((row) => row.tasks.some((task) => task.toLowerCase().includes("testnet"))).length;
+
+  els.dropSample.textContent = `${t("candidatePool")}: ${formatNumber(rows.length)}`;
+  els.highSignalDrops.textContent = formatNumber(highSignal);
+  els.backedDrops.textContent = formatNumber(backed);
+  els.lowCostDrops.textContent = formatNumber(lowCost);
+  els.testnetDrops.textContent = formatNumber(testnet);
+  els.dropCategories.innerHTML = renderStaticChips(["L2 / Infrastructure", "DeFi", "AI", "Data"]);
+  els.dropActions.innerHTML = renderStaticChips([t("bridgeSwapStake"), t("questsSocial"), t("testnetFeedback")]);
+  els.dropRules.innerHTML = renderStaticChips([t("noDeposits"), t("uniqueWallets"), t("verifyLinks")]);
+}
+
+function renderDrops() {
+  const rows = sortDropRows(getFilteredDropRows());
+  els.dropVisibleCount.textContent = `${formatNumber(rows.length)} ${t("rows")}`;
+  els.dropTableBody.innerHTML = rows.slice(0, 1000).map(renderDropRow).join("");
+  updateDropSortHeaders();
+  renderDropPicks(rows);
+
+  if (rows.length > 1000) {
+    els.dropLoadState.textContent = t("showingFirst");
+  } else if (state.rows.length) {
+    els.dropLoadState.textContent = t("loaded");
+  }
+}
+
+function getFilteredDropRows() {
+  const search = els.searchInput.value.trim().toLowerCase();
+  const category = els.categoryFilter.value;
+  const minRating = Number(els.ratingFilter.value);
+
+  return buildDropRows(state.rows).filter((row) => {
+    const haystack = `${row.name || ""} ${row.symbol || ""}`.toLowerCase();
+    return (
+      (!search || haystack.includes(search)) &&
+      (category === "all" || row.category === category) &&
+      row.dropScore >= minRating
+    );
+  });
+}
+
+function buildDropRows(rows) {
+  return rows
+    .filter((row) => row.status === "upcoming")
+    .map((row) => {
+      const dropScore = calculateDropScore(row);
+      const effort = calculateDropEffort(row);
+      const cost = calculateDropCost(row);
+      return {
+        ...row,
+        dropScore,
+        effort,
+        cost,
+        effortLabel: effortLabel(effort),
+        costLabel: costLabel(cost),
+        tasks: dropTasks(row),
+        dropSignal: dropSignal(row, dropScore),
+      };
+    })
+    .filter((row) => row.dropScore >= 35);
+}
+
+function calculateDropScore(row) {
+  let score = 28;
+  const category = String(row.category || "").toLowerCase();
+  const raised = Number(row.raised_amount || 0);
+  if (/(infrastructure|blockchain|defi|ai|data|layer|zk|rollup|oracle|wallet|privacy)/i.test(category)) score += 22;
+  if (countItems(row.investors)) score += Math.min(18, countItems(row.investors) * 4);
+  if (countItems(row.launchpads)) score += 8;
+  if (row.website || row.twitter || row.telegram) score += 8;
+  if (raised > 0 && raised <= 5_000_000) score += 10;
+  if (raised > 20_000_000) score -= 8;
+  if (row.start_date) score += 6;
+  return Math.max(0, Math.min(100, score));
+}
+
+function calculateDropEffort(row) {
+  const category = String(row.category || "").toLowerCase();
+  if (/(infrastructure|blockchain|layer|zk|rollup)/i.test(category)) return 3;
+  if (/(defi|data|ai)/i.test(category)) return 2;
+  return 1;
+}
+
+function calculateDropCost(row) {
+  const category = String(row.category || "").toLowerCase();
+  if (/(defi|bridge|dex|staking)/i.test(category)) return 2;
+  return 1;
+}
+
+function dropTasks(row) {
+  const category = String(row.category || "").toLowerCase();
+  const tasks = [t("questsSocial")];
+  if (/(infrastructure|blockchain|layer|zk|rollup|data|ai)/i.test(category)) {
+    tasks.push(t("testnetFeedback"));
+  }
+  if (/(defi|bridge|dex|staking)/i.test(category)) {
+    tasks.push(t("bridgeSwapStake"));
+  }
+  tasks.push(t("daily"));
+  return [...new Set(tasks)];
+}
+
+function dropSignal(row, score) {
+  const signals = [];
+  if (countItems(row.investors)) signals.push(`${countItems(row.investors)} ${t("investors").toLowerCase()}`);
+  if (countItems(row.launchpads)) signals.push(`${countItems(row.launchpads)} ${t("launchpads").toLowerCase()}`);
+  if (row.raised_amount) signals.push(formatMoney(row.raised_amount).replace(/<[^>]*>/g, ""));
+  if (!signals.length) signals.push(score >= 70 ? t("highSignalDrops") : t("observe"));
+  return signals.join(" · ");
+}
+
+function effortLabel(value) {
+  return value === 3 ? t("high") : value === 2 ? t("medium") : t("low");
+}
+
+function costLabel(value) {
+  return value === 2 ? t("medium") : t("freeLow");
+}
+
+function renderStaticChips(items) {
+  return items.map((item) => `<span class="patternChip">${escapeHtml(item)}</span>`).join("");
 }
 
 function renderPick(row) {
@@ -589,6 +874,8 @@ function render() {
   } else if (state.rows.length) {
     els.loadState.textContent = t("loaded");
   }
+
+  renderDrops();
 }
 
 function sortRows(rows) {
@@ -598,8 +885,15 @@ function sortRows(rows) {
   });
 }
 
+function sortDropRows(rows) {
+  return [...rows].sort((a, b) => {
+    const result = compareRows(a, b, state.dropSortColumn);
+    return state.dropSortDirection === "asc" ? result : -result;
+  });
+}
+
 function compareRows(a, b, column) {
-  if (["rating", "raised_amount", "token_price", "current_price", "roi", "ath_roi"].includes(column)) {
+  if (["rating", "dropScore", "effort", "cost", "raised_amount", "token_price", "current_price", "roi", "ath_roi"].includes(column)) {
     return Number(a[column] || 0) - Number(b[column] || 0);
   }
 
@@ -645,6 +939,32 @@ function renderRow(row) {
       <td>${formatPrice(row.current_price)}</td>
       <td>${formatMultiple(row.roi)}</td>
       <td>${formatMultiple(row.ath_roi)}</td>
+    </tr>
+  `;
+}
+
+function renderDropRow(row) {
+  const ratingClass = row.dropScore >= 75 ? "high" : row.dropScore >= 50 ? "mid" : "low";
+  return `
+    <tr>
+      <td><span class="rating ${ratingClass}">${row.dropScore}</span></td>
+      <td>
+        <div class="project">
+          ${renderLogo(row)}
+          <div class="projectText">
+            <a href="${escapeHtml(row.cryptorank_url || "#")}" target="_blank" rel="noopener noreferrer">
+              ${escapeHtml(row.name || t("unknown"))}
+            </a>
+            <span>${escapeHtml(row.symbol || t("notAvailable"))}</span>
+          </div>
+        </div>
+      </td>
+      <td>${escapeHtml(row.category || t("notAvailable"))}</td>
+      <td>${escapeHtml(row.effortLabel)}</td>
+      <td>${escapeHtml(row.costLabel)}</td>
+      <td><span class="compactList" title="${escapeHtml(row.tasks.join(", "))}">${escapeHtml(row.tasks.join(", "))}</span></td>
+      <td>${renderNamedList(row.investors)}</td>
+      <td>${formatDate(row.start_date)}</td>
     </tr>
   `;
 }
@@ -756,7 +1076,9 @@ function translateStatus(status) {
 function applyTranslations() {
   document.documentElement.lang = state.language;
   els.languageSelect.value = state.language;
+  document.querySelector("[data-i18n='title']").textContent = state.mode === "drop" ? t("dropMode") : t("title");
   document.querySelectorAll("[data-i18n]").forEach((element) => {
+    if (element.dataset.i18n === "title") return;
     element.textContent = t(element.dataset.i18n);
   });
   document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
@@ -764,7 +1086,22 @@ function applyTranslations() {
   });
   if (!state.rows.length) {
     els.loadState.textContent = t("loading");
+    els.dropLoadState.textContent = t("loading");
   }
+}
+
+function setMode(mode) {
+  state.mode = mode === "drop" ? "drop" : "ico";
+  localStorage.setItem("icoDashboardMode", state.mode);
+  els.modeButtons.forEach((button) => {
+    const isActive = button.dataset.mode === state.mode;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-pressed", String(isActive));
+  });
+  els.dashboardViews.forEach((view) => {
+    view.classList.toggle("active", view.dataset.view === state.mode);
+  });
+  document.querySelector("[data-i18n='title']").textContent = state.mode === "drop" ? t("dropMode") : t("title");
 }
 
 [
@@ -773,6 +1110,13 @@ function applyTranslations() {
   els.categoryFilter,
   els.ratingFilter,
 ].forEach((element) => element.addEventListener("input", render));
+
+els.modeButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    setMode(button.dataset.mode);
+    render();
+  });
+});
 
 els.sortSelect.addEventListener("input", () => {
   const [column, direction] = sortSelectToState(els.sortSelect.value);
@@ -792,6 +1136,19 @@ document.querySelectorAll(".sortHeader").forEach((button) => {
     }
     syncSortSelect();
     render();
+  });
+});
+
+document.querySelectorAll(".dropSortHeader").forEach((button) => {
+  button.addEventListener("click", () => {
+    const column = button.dataset.dropSortColumn;
+    if (state.dropSortColumn === column) {
+      state.dropSortDirection = state.dropSortDirection === "asc" ? "desc" : "asc";
+    } else {
+      state.dropSortColumn = column;
+      state.dropSortDirection = defaultDirection(column);
+    }
+    renderDrops();
   });
 });
 
@@ -836,15 +1193,28 @@ function updateSortHeaders() {
   });
 }
 
+function updateDropSortHeaders() {
+  document.querySelectorAll(".dropSortHeader").forEach((button) => {
+    const isActive = button.dataset.dropSortColumn === state.dropSortColumn;
+    button.classList.toggle("active", isActive);
+    button.classList.toggle("asc", isActive && state.dropSortDirection === "asc");
+    button.classList.toggle("desc", isActive && state.dropSortDirection === "desc");
+  });
+}
+
 els.languageSelect.addEventListener("change", () => {
   state.language = els.languageSelect.value;
   localStorage.setItem("icoDashboardLanguage", state.language);
   applyTranslations();
+  setMode(state.mode);
   updateSummary();
   updateInsights(state.pastRows);
+  updateDropInsights();
   renderTopPicks();
   render();
 });
 
 applyTranslations();
+resetFilters();
+setMode(state.mode);
 loadData();

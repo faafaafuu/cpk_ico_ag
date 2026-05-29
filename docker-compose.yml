@@ -1,0 +1,20 @@
+services:
+  cryptorank-ico-agent:
+    build: .
+    container_name: cryptorank-ico-agent
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      TZ: ${TZ:-Europe/Berlin}
+      HTTP_PORT: ${HTTP_PORT:-8787}
+      OUTPUT_DIR: /app/output
+      FORMAT: ${FORMAT:-json}
+      UPDATE_STATUS: ${UPDATE_STATUS:-all}
+      UPDATE_SOURCE: ${UPDATE_SOURCE:-scrape}
+      UPDATE_TIME: ${UPDATE_TIME:-06:00}
+      RUN_ON_START: ${RUN_ON_START:-true}
+    ports:
+      - "${HTTP_PORT:-8787}:8787"
+    volumes:
+      - ./output:/app/output
